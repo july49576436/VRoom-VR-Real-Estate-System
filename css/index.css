@@ -1,0 +1,192 @@
+body {
+    font-family: Arial, sans-serif;
+    margin-left: 3%;
+    margin-right: 3%;
+    padding: 0;
+}
+
+header {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .logo {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+header nav a {
+    margin: 0 10px;
+    padding: 5px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 800;
+    color: black;
+}
+
+header nav a:hover{
+    background-color: #fff8d2;
+    font-size: 18px;
+}
+header button {
+    padding: 5px 20px;
+    color: white;
+    background-color: #ffd700;
+    font-weight: 800;
+    font-size:medium;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+header button:hover{
+    color: black;
+    background-color: #fff8d2;
+    font-weight: 800;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 左右兩邊對齊 */
+    gap: 10px;
+}
+
+.search-left {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    background-color: #fff8d2;
+}
+
+.search-keyword {
+    margin-left: 20px;
+}
+
+.search-keyword input{
+    width: 400px;
+}
+
+.search-right {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.city{
+    margin: 0px 0px 10px 0px;
+}
+.search-container select,
+.search-container input[type="search"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    height: 40px;
+}
+
+.search-container button {
+    padding: 10px;
+    border: none;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.search-container button i {
+    font-size: 16px;
+    color: black;
+}
+
+.search-container button:hover  {
+    color: #f0f0f0;
+    background-color: black;
+}
+
+.search-container button:hover  i{
+    color: #f0f0f0;
+    background-color: black;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+}
+
+.button-container a {
+    display: inline-block;
+    padding: 10px 15px;
+    border: 0.2px solid black;
+    border-radius: 40px;
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 800;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.button-container a:hover {
+    background-color: black;
+    color: white;
+}
+
+#recommendations, #new-arrivals, #price-drop {
+    padding: 20px;
+}
+.survey {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.property {
+    width: 30%;
+    box-sizing: border-box;
+    justify-content:space-around;
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    flex: 1;
+    margin: 0 10px;
+    padding: 20px;
+}
+.property img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+.property-details {
+    background-color: #FFD700;
+    padding: 10px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.property h3 {
+    font-size: 18px;
+    font-weight: 1000;
+    margin: 10px 0;
+    color: black;
+}
+.property p {
+    margin: 5px 0;
+    color: #666;
+}
+footer{
+    background-color: #fff8d2;
+    text-align: center;
+    padding: 20px;
+    border-radius: 20px;
+}
+#goTopButton{
+    display: none; 
+    z-index: 5; 
+    cursor: pointer;
+    color: black;
+}

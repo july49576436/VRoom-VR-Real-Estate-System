@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V Room</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'></script>
+</head>
+<body>
+    <header>
+        <div class="logo">V ROOM</div>
+        <nav>
+            <a href="#information">房仲資訊</a>
+            <button>登入</button>
+        </nav>
+    </header>
+    <main>
+        <section class="search-section">
+            <div class="search-container">
+                <!-- 左側篩選 -->
+                <div class="search-left">
+                    <form>
+                        <div class="city">
+                            <label for="cities">縣市:</label>
+                            <select id="cities" name="cities" onchange="showDistricts()">
+                                <option value="">-- 請選擇縣市 --</option>
+                                <option value="taipei_city">台北市 (Taipei City)</option>
+                                <option value="new_taipei_city">新北市 (New Taipei City)</option>
+                                <option value="keelung_city">基隆市 (Keelung City)</option>
+                                <option value="taichung_city">台中市 (Taichung City)</option>
+                                <option value="tainan_city">台南市 (Tainan City)</option>
+                                <option value="kaohsiung_city">高雄市 (Kaohsiung City)</option>
+                                <option value="taoyuan_city">桃園市 (Taoyuan City)</option>
+                                <option value="hsinchu_city">新竹市 (Hsinchu City)</option>
+                                <option value="chiayi_city">嘉義市 (Chiayi City)</option>
+                                <option value="yilan_county">宜蘭縣 (Yilan County)</option>
+                                <option value="hsinchu_county">新竹縣 (Hsinchu County)</option>
+                                <option value="miaoli_county">苗栗縣 (Miaoli County)</option>
+                                <option value="changhua_county">彰化縣 (Changhua County)</option>
+                                <option value="nantou_county">南投縣 (Nantou County)</option>
+                                <option value="yunlin_county">雲林縣 (Yunlin County)</option>
+                                <option value="chiayi_county">嘉義縣 (Chiayi County)</option>
+                                <option value="pingtung_county">屏東縣 (Pingtung County)</option>
+                                <option value="taitung_county">台東縣 (Taitung County)</option>
+                                <option value="hualien_county">花蓮縣 (Hualien County)</option>
+                                <option value="penghu_county">澎湖縣 (Penghu County)</option>
+                                <option value="kinmen_county">金門縣 (Kinmen County)</option>
+                                <option value="lienchiang_county">連江縣 (Lienchiang County)</option>
+                            </select>
+                        </div>
+                        <div id="districts" class="districts" style="display: none;">
+                            <label for="district">區域:</label>
+                            <select id="district" name="district">
+                                <option value="">-- 請選擇區域 --</option>
+                                <!-- 區域選項會根據縣市動態顯示 -->
+                            </select>
+                        </div>
+                    </form>
+                    <label for="price-filter">價格:</label>
+                    <select id="price-filter" name="price-filter" onchange="applyPriceFilter()">
+                        <option value="">不限價格</option>
+                        <option value="0-1000">1000萬以下</option>
+                        <option value="1000-5000">1000萬 - 1500萬</option>
+                        <option value="5000-10000">1500萬 - 2000萬</option>
+                        <option value="10000-">2000萬 - 3000萬</option>
+                        <option value="10000-">3000萬 - 4000萬</option>
+                        <option value="10000-">4000萬以上</option>
+                    </select>
+                    <label for="type-filter">類型:</label>
+                    <select id="type-filter" name="type-filter" onchange="applyTypeFilter()">
+                        <option value="">不限類型</option>
+                        <option value="type1">住宅</option>
+                        <option value="type2">商用</option>
+                        <option value="type3">住辦</option>
+                        <option value="type4">土地</option>
+                        <option value="type5">車位</option>
+                        <option value="type6">廠房</option>
+                        <option value="type7">其他</option>
+                    </select>
+                    <div class="search-keyword">
+                        <input type="search" id="search" name="search" placeholder="關鍵字(街道, 捷運站)">
+                        <button type="button" id="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+    
+                <div class="search-right button-container">
+                    <a href="#recommendations">推薦</a>
+                    <a href="#new-arrivals">新上架</a>
+                    <a href="#price-drop">降價中古屋</a>
+                </div>
+            </div>
+        </section>
+        <hr>
+        
+        <section id="recommendations">
+            <h2>推薦</h2>
+            <div class="survey">
+                <div class="property">
+                    <a href="house.html">
+                        <img src="image/house1.jpg" alt="Pineapple House">
+                        <div class="property-details">
+                            <h3>國際名蝦柏有豪華戶</h3>
+                    </a>
+                        <p>$230萬/坪</p>
+                        <p>中山區/住宅/3房/2廳/102坪</p>
+                    </div>
+                </div>
+                <div class="property">
+                    <img src="image/house2.jpg" alt="Squidward House">
+                    <div class="property-details">
+                        <h3>市府微風松菸美寓</h3>
+                        <p>$250萬/坪</p>
+                        <p>中山區/住宅/3房/2廳/102坪</p>
+                    </div>
+                </div>
+                <div class="property">
+                    <img src="image/house3.jpg" alt="Patrick House">
+                    <div class="property-details">
+                        <h3>高檔裝潢景觀美別墅</h3>
+                        <p>$5900萬</p>
+                        <p>中山區/住宅/3房/2廳/102坪</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="new-arrivals">
+            <h2>新上架</h2>
+            <div class="survey">
+                <div class="property">
+                    <img src="image/house4.jpg" alt="Patrick House">
+                    <div class="property-details">
+                        <h3>高檔裝潢景觀美別墅</h3>
+                        <p>$5900萬</p>
+                        <p>中山區/住宅/3房/2廳/102坪</p>
+                    </div>
+                </div>
+                <div class="property">
+                    <img src="image/house5.jpg" alt="Patrick House">
+                    <div class="property-details">
+                        <h3>高檔裝潢景觀美別墅</h3>
+                        <p>$5900萬</p>
+                        <p>中山區/住宅/3房/2廳/102坪</p>
+                    </div>
+                </div>
+                <div class="property">
+                    <img src="image/house6.jpg" alt="Patrick House">
+                    <div class="property-details">
+                        <h3>高檔裝潢景觀美別墅</h3>
+                        <p>$5900萬</p>
+                        <p>中山區/住宅/3房/2廳/102坪</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="price-drop">
+            <h2>降價中古屋</h2>
+            <div class="survey">
+                <div class="property">
+                    <img src="image/house7.jpg" alt="Patrick House">
+                    <div class="property-details">
+                        <h3>高檔裝潢景觀美別墅</h3>
+                        <p>$5900萬</p>
+                        <p>中山區/住宅/3房/2廳/102坪</p>
+                    </div>
+                </div>
+                <div class="property">
+                    <img src="image/house8.jpg" alt="Patrick House">
+                    <div class="property-details">
+                        <h3>高檔裝潢景觀美別墅</h3>
+                        <p>$5900萬</p>
+                        <p>中山區/住宅/3房/2廳/102坪</p>
+                    </div>
+                </div>
+                <div class="property">
+                    <img src="image/house9.jpg" alt="Patrick House">
+                    <div class="property-details">
+                        <h3>高檔裝潢景觀美別墅</h3>
+                        <p>$5900萬</p>
+                        <p>中山區/住宅/3房/2廳/102坪</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer>
+            <h2>VRoom</h2>
+            <p>地址:</p>
+            <P>客服專線:03-1234567</P>
+            <p>客服信箱:cycu112vr@gmail.com</p>
+        </footer>
+    </main>
+    <script>
+        const districtsData = {
+            taipei_city: [
+                "全區",
+                "大安區",
+                "信義區",
+                "文山區",
+                "中正區",
+                "中山區",
+                "松山區",
+                "南港區",
+                "士林區",
+                "北投區"
+            ],
+            new_taipei_city: [
+                "全區",
+                "板橋區",
+                "新店區",
+                "土城區",
+                "三峽區",
+                "鶯歌區",
+                "樹林區",
+                "三芝區",
+                "淡水區",
+                "八里區",
+                "林口區",
+                "五股區",
+                "泰山區",
+                "新莊區",
+                "瑞芳區"
+            ],
+            keelung_city: [
+                "全區",
+                "仁愛區",
+                "中正區",
+                "中山區",
+                "安樂區",
+                "信義區",
+                "七堵區"
+            ],
+            taichung_city: [
+                "全區",
+                "北屯區",
+                "南屯區",
+                "西屯區",
+                "東區",
+                "南區",
+                "西區",
+                "北區"
+            ],
+            tainan_city: [
+                "全區",
+                "安平區",
+                "永康區",
+                "南化區",
+                "中西區",
+                "北區",
+                "東區",
+                "南區",
+                "西區",
+                "歸仁區",
+                "關廟區",
+                "新化區",
+                "新營區",
+                "麻豆區",
+                "善化區"
+            ],
+            kaohsiung_city: [
+                "全區",
+                "新興區",
+                "前鎮區",
+                "鳳山區",
+                "鼓山區",
+                "三民區",
+                "左營區",
+                "鹽埕區",
+                "橋頭區",
+                "楠梓區",
+                "小港區",
+                "仁武區",
+                "大寮區",
+                "大樹區",
+                "岡山區"
+            ],
+            taoyuan_city: [
+                "全區",
+                "平鎮區",
+                "大溪區",
+                "桃園區",
+                "中壢區",
+                "蘆竹區",
+                "龜山區",
+                "八德區",
+                "楊梅區",
+                "觀音區",
+                "龍潭區",
+                "大園區",
+                "新屋區",
+                "復興區"
+            ],
+            hsinchu_city: [
+                "全區",
+                "東區",
+                "西區",
+                "北區",
+                "香山區"
+            ],
+            chiayi_city: [
+                "全區",
+                "東區",
+                "西區"
+            ],
+            yilan_county: [
+                "全區",
+                "宜蘭市",
+                "羅東鎮",
+                "蘇澳鎮",
+                "冬山鄉",
+                "五結鄉",
+                "員山鄉",
+                "大同鄉",
+                "南澳鄉",
+                "頭城鎮",
+                "礁溪鄉"
+            ],
+            hsinchu_county: [
+                "全區",
+                "竹北市",
+                "竹東鎮",
+                "新埔鎮",
+                "關西鎮",
+                "湖口鄉",
+                "芎林鄉",
+                "橫山鄉",
+                "北埔鄉",
+                "寶山鄉",
+                "尖石鄉",
+                "五峰鄉"
+            ],
+            miaoli_county: [
+                "全區",
+                "苗栗市",
+                "苑裡鎮",
+                "通霄鎮",
+                "竹南鎮",
+                "後龍鎮",
+                "造橋鄉",
+                "頭份市",
+                "三義鄉",
+                "西湖鄉",
+                "銅鑼鄉",
+                "南庄鄉",
+                "大湖鄉",
+                "泰安鄉",
+                "公館鄉"
+            ],
+            changhua_county: [
+                "全區",
+                "彰化市",
+                "員林市",
+                "溪湖鎮",
+                "田中鎮",
+                "二林鎮",
+                "大村鄉",
+                "大城鄉",
+                "社頭鄉",
+                "埔鹽鄉",
+                "和美鎮",
+                "鹿港鎮",
+                "彰化縣"
+            ],
+            nantou_county: [
+                "全區",
+                "南投市",
+                "埔里鎮",
+                "草屯鎮",
+                "竹山鎮",
+                "集集鎮",
+                "水里鄉",
+                "名間鄉",
+                "中寮鄉",
+                "仁愛鄉",
+                "魚池鄉",
+                "鹿谷鄉"
+            ],
+            yunlin_county: [
+                "全區",
+                "斗六市",
+                "斗南鎮",
+                "虎尾鎮",
+                "西螺鎮",
+                "土庫鎮",
+                "褒忠鄉",
+                "大埤鄉",
+                "莿桐鄉",
+                "林內鄉",
+                "二崙鄉",
+                "四湖鄉",
+                "元長鄉"
+            ],
+            chiayi_county: [
+                "全區",
+                "太保市",
+                "嘉義市",
+                "布袋鎮",
+                "阿里山鄉",
+                "中埔鄉",
+                "大埔鄉",
+                "梅山鄉",
+                "竹崎鄉",
+                "東石鄉",
+                "溪口鄉",
+                "中埔鄉",
+                "新港鄉",
+                "六腳鄉"
+            ],
+            pingtung_county: [
+                "全區",
+                "屏東市",
+                "潮州鎮",
+                "恆春鎮",
+                "萬丹鄉",
+                "東港鎮",
+                "三地門鄉",
+                "霧台鄉",
+                "里港鄉",
+                "高樹鄉",
+                "九如鄉",
+                "長治鄉",
+                "鹽埔鄉",
+                "來義鄉",
+                "內埔鄉"
+            ],
+            taitung_county: [
+                "全區",
+                "台東市",
+                "關山鎮",
+                "卑南鄉",
+                "大武鄉",
+                "達仁鄉",
+                "長濱鄉",
+                "東河鄉",
+                "太麻里鄉",
+                "綠島鄉",
+                "蘭嶼鄉"
+            ],
+            hualien_county: [
+                "全區",
+                "花蓮市",
+                "吉安鄉",
+                "壽豐鄉",
+                "鳳林鎮",
+                "光復鄉",
+                "豐濱鄉",
+                "瑞穗鄉",
+                "萬榮鄉",
+                "秀林鄉",
+                "吉安鄉",
+                "卓溪鄉"
+            ],
+            penghu_county: [
+                "全區",
+                "馬公市",
+                "西嶼鄉",
+                "望安鄉",
+                "七美鄉",
+                "白沙鄉",
+                "湖西鄉"
+            ],
+            kinmen_county: [
+                "全區",
+                "金城鎮",
+                "金湖鎮",
+                "金寧鄉",
+                "金門縣",
+                "烈嶼鄉"
+            ],
+            lienchiang_county: [
+                "全區",
+                "南竿鄉",
+                "北竿鄉",
+                "東引鄉",
+                "莒光鄉"
+            ]
+        };
+
+        function showDistricts() {
+            const city = document.getElementById('cities').value;
+            const districtsSelect = document.getElementById('district');
+            const districtsContainer = document.getElementById('districts');
+
+            if (city && districtsData[city]) {
+                const districts = districtsData[city];
+                districtsSelect.innerHTML = '<option value="">-- 請選擇區域 --</option>';
+                districts.forEach(district => {
+                    districtsSelect.innerHTML += `<option value="${district}">${district}</option>`;
+                });
+                districtsContainer.style.display = 'block';
+            } else {
+                districtsSelect.innerHTML = '<option value="">-- 請選擇區域 --</option>';
+                districtsContainer.style.display = 'none';
+            }
+        }
+
+        function applyPriceFilter() {
+            // Implement price filter logic here
+        }
+
+        function applyTypeFilter() {
+            // Implement type filter logic here
+        }
+
+        document.getElementById('search-btn').addEventListener('click', function() {
+            const query = document.getElementById('search').value;
+            console.log('Search query:', query);
+            // Add your search logic here
+        });
+        //回到頂端按鈕 start
+        //<![CDATA[
+        (function () {
+        $("body").append("<img id='goTopButton' title='回到頂端'/>");
+        var img = "http://1.bp.blogspot.com/-zMfrIkyhlVs/Uh7FePoKU8I/AAAAAAAAHnA/WA0H_vbWAWc/s1600/go-top.png",
+        locatioin = 4/5, // 按鈕出現在螢幕的高度
+        right = 10, // 距離右邊 px 值
+        opacity = 1, // 透明度
+        speed = 2000, // 捲動速度
+        $button = $("#goTopButton"),
+        $body = $(document),
+        $win = $(window);
+        $button.attr("src", img);
+        $button.on({
+        mouseover: function() {$button.css("opacity", 1);},
+        mouseout: function() {$button.css("opacity", opacity);},
+        click: function() {$("html, body").animate({scrollTop: 0}, speed);}
+        });
+        window.goTopMove = function () {
+        var scrollH = $body.scrollTop(),
+        winH = $win.height(),
+        css = {"top": winH * locatioin + "px", "position": "fixed", "right": right, "opacity": opacity};
+        if(scrollH > 20) {
+        $button.css(css);
+        $button.fadeIn("slow");
+        } else {
+        $button.fadeOut("slow");
+        }
+        };
+        $win.on({
+        scroll: function() {goTopMove();},
+        resize: function() {goTopMove();}
+        });
+        } )();
+        //]]>
+        //回到頂端按鈕 end, Design by WFU BLOG
+    </script>
+</body>
+</html>
