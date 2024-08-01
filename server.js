@@ -3,7 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const path = require('path');
 const search = require('./search');//搜尋
-const db = require('./db'); //資料庫
+const db = require('./database'); //資料庫
 
 
 // 設置靜態文件夾
