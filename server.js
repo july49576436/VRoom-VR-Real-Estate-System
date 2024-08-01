@@ -1,6 +1,10 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const path = require('path');
+const search = require('./search');//搜尋
+const db = require('./db'); //資料庫
+
 
 // 設置靜態文件夾
 app.use(express.static('public'));
@@ -8,6 +12,14 @@ app.use(express.static('public'));
 // 處理首頁請求
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html'); // 回應 index.html
+});
+
+// 處理搜尋請求
+app.use(express.json()); // 解析 JSON 格式的請求主體
+app.post('/search', (req, res) => {
+  const query = req.body.query;
+  const results = search(query); // 使用搜尋模組進行搜尋
+  res.json({ results }); // 返回搜尋結果
 });
 
 // 啟動伺服器
@@ -34,3 +46,4 @@ app.listen(PORT, () => {
 
 // 使用路由
 //app.use('/api', houseRoutes);
+
