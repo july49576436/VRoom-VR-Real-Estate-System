@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
 });
 
 // 處理搜尋請求
-app.use(express.json()); // 解析 JSON 格式的請求主體
+app.use(express.json()); // 解 JSON 格式的請求主體
 app.post('/search', (req, res) => {
   const query = req.body.query;
   const results = search(query); // 使用搜尋模組進行搜尋
@@ -27,8 +27,8 @@ app.listen(PORT, () => {
   console.log(`伺服器正在運行在 http://localhost:${PORT}`);
 });
 
-//設置路由文件 您需要在 routes 資料夾中創建路由文件
-//例如 houseRoutes.js。在這個文件中，您可以定義與房屋相關的路由。
+//設置路由文件 要在 routes 資料夾中創建路由文件
+//例如 houseRoutes.js:定義與房屋相關的路由。
 
 //const express = require('express');
 //const router = express.Router();
