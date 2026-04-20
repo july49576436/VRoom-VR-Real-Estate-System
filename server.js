@@ -13,12 +13,37 @@ app.use('/image', express.static(path.join(__dirname, 'public/image')));
 app.use('/test', express.static(path.join(__dirname, 'public/3D_data')));
 app.use(express.json());
 
+function parseHouseID(rawHouseID, fallback = 1) {
+    const parsed = Number.parseInt(rawHouseID, 10);
+    return Number.isNaN(parsed) ? fallback : parsed;
+}
+
+function parseId(rawValue) {
+    const parsed = Number.parseInt(rawValue, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+}
+
 // 處理首頁請求
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html'); // 回應 index.html
 });
+
+app.get('/search', (req, res) => {
+    const { city, district, priceRange, houseType } = req.query;
+
+    search.searchHouses(city, district, priceRange, houseType, (err, results) => {
+            if (err) {
+                    console.error('搜尋錯誤:', err);
+                    return res.status(500).json({ message: '搜尋失敗' });
+            }
+            res.json(results);
+    });
+});
+
 app.get('/api/house', (req, res) => {
-  dynamicContent.fetchHouseDetails((err, result) => {
+    const houseID = parseHouseID(req.query.houseID, 1);
+
+    dynamicContent.fetchHouseDetails(houseID, (err, result) => {
       if (err) {
           res.status(500).send('Error fetching house details');
           return;
@@ -28,7 +53,9 @@ app.get('/api/house', (req, res) => {
 });
 
 app.get('/api/house/images', (req, res) => {
-  dynamicContent.fetchHouseImages(1, (err, results) => {
+    const houseID = parseHouseID(req.query.houseID, 1);
+
+    dynamicContent.fetchHouseImages(houseID, (err, results) => {
       if (err) {
           res.status(500).send('Error fetching house images');
           return;
@@ -50,7 +77,9 @@ app.post('/api/savePosition', (req, res) => {
 });
 
 app.get('/api/house/price', (req, res) => {
-  dynamicContent.fetchPriceInfo(1, (err, results) => {
+    const houseID = parseHouseID(req.query.houseID, 1);
+
+    dynamicContent.fetchPriceInfo(houseID, (err, results) => {
       if (err) {
           res.status(500).send('Error fetching price information');
           return;
@@ -74,7 +103,9 @@ app.get('/api/house/price', (req, res) => {
 });
 
 app.get('/api/house/community-planning', (req, res) => {
-  dynamicContent.fetchCommunityPlanning(1, (err, result) => {
+    const houseID = parseHouseID(req.query.houseID, 1);
+
+    dynamicContent.fetchCommunityPlanning(houseID, (err, result) => {
       if (err) {
           res.status(500).send('Error fetching community planning details');
           return;
@@ -122,7 +153,7 @@ app.get('/api/VR-acene/model', (req, res) => {
   });
 
 app.get('/api/house/latest-news', (req, res) => {
-  const houseID = req.query.houseID || 1; // 根據需要使用 houseID 參數
+    const houseID = parseHouseID(req.query.houseID, 1);
   dynamicContent.fetchLatestNews(houseID, (err, results) => {
       if (err) {
           res.status(500).send('Error fetching latest news');
@@ -134,7 +165,9 @@ app.get('/api/house/latest-news', (req, res) => {
 
 
 app.get('/api/house/surrounding-facilities', (req, res) => {
-  dynamicContent.fetchSurroundingFacilities(1, (err, result) => {
+    const houseID = parseHouseID(req.query.houseID, 1);
+
+    dynamicContent.fetchSurroundingFacilities(houseID, (err, result) => {
       if (err) {
           res.status(500).send('Error fetching surrounding facilities');
           return;
@@ -151,6 +184,425 @@ app.get('/api/search-filters', (req, res) => {
       }
       res.json(results);
   });
+});
+
+app.get('/api/recommendations', (req, res) => {
+    dynamicContent.fetchFeaturedHouses('recommend', (err, results) => {
+            if (err) {
+                    console.error('Error fetching recommendations:', err);
+                    return res.status(500).json({ message: 'Error fetching recommendations' });
+            }
+            res.json(results);
+    });
+});
+
+app.get('/api/new-arrivals', (req, res) => {
+    dynamicContent.fetchFeaturedHouses('new', (err, results) => {
+            if (err) {
+                    console.error('Error fetching new arrivals:', err);
+                    return res.status(500).json({ message: 'Error fetching new arrivals' });
+            }
+            res.json(results);
+    });
+});
+
+app.get('/api/price-drop', (req, res) => {
+    dynamicContent.fetchFeaturedHouses('price_reduction', (err, results) => {
+            if (err) {
+                    console.error('Error fetching price drop houses:', err);
+                    return res.status(500).json({ message: 'Error fetching price drop houses' });
+            }
+            res.json(results);
+    });
+});
+
+// -----------------------------
+// CRUD APIs
+// -----------------------------
+
+app.get('/api/admin/houses', (req, res) => {
+    dynamicContent.listHouses((err, results) => {
+        if (err) {
+            console.error('Error listing houses:', err);
+            return res.status(500).json({ message: 'Error listing houses' });
+        }
+        res.json(results);
+    });
+});
+
+app.post('/api/admin/houses', (req, res) => {
+    dynamicContent.createHouse(req.body, (err, result) => {
+        if (err) {
+            console.error('Error creating house:', err);
+            return res.status(500).json({ message: 'Error creating house' });
+        }
+        res.status(201).json({ success: true, insertedId: result.insertId });
+    });
+});
+
+app.put('/api/admin/houses/:houseID', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.updateHouse(houseID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error updating house:', err);
+            return res.status(500).json({ message: 'Error updating house' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.delete('/api/admin/houses/:houseID', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.deleteHouse(houseID, (err, result) => {
+        if (err) {
+            console.error('Error deleting house:', err);
+            return res.status(500).json({ message: 'Error deleting house' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.get('/api/admin/houses/:houseID/images', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.fetchHouseImagesByHouse(houseID, (err, results) => {
+        if (err) {
+            console.error('Error listing house images:', err);
+            return res.status(500).json({ message: 'Error listing house images' });
+        }
+        res.json(results);
+    });
+});
+
+app.post('/api/admin/houses/:houseID/images', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.createHouseImage(houseID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error creating house image:', err);
+            return res.status(500).json({ message: 'Error creating house image' });
+        }
+        res.status(201).json({ success: true, insertedId: result.insertId });
+    });
+});
+
+app.put('/api/admin/images/:imageID', (req, res) => {
+    const imageID = parseId(req.params.imageID);
+    if (!imageID) {
+        return res.status(400).json({ message: 'Invalid imageID' });
+    }
+
+    dynamicContent.updateHouseImage(imageID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error updating house image:', err);
+            return res.status(500).json({ message: 'Error updating house image' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.delete('/api/admin/images/:imageID', (req, res) => {
+    const imageID = parseId(req.params.imageID);
+    if (!imageID) {
+        return res.status(400).json({ message: 'Invalid imageID' });
+    }
+
+    dynamicContent.deleteHouseImage(imageID, (err, result) => {
+        if (err) {
+            console.error('Error deleting house image:', err);
+            return res.status(500).json({ message: 'Error deleting house image' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.get('/api/admin/houses/:houseID/prices', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.fetchPriceRecordsByHouse(houseID, (err, results) => {
+        if (err) {
+            console.error('Error listing price records:', err);
+            return res.status(500).json({ message: 'Error listing price records' });
+        }
+        res.json(results);
+    });
+});
+
+app.post('/api/admin/houses/:houseID/prices', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.createPriceRecord(houseID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error creating price record:', err);
+            return res.status(500).json({ message: 'Error creating price record' });
+        }
+        res.status(201).json({ success: true, insertedId: result.insertId });
+    });
+});
+
+app.put('/api/admin/prices/:priceID', (req, res) => {
+    const priceID = parseId(req.params.priceID);
+    if (!priceID) {
+        return res.status(400).json({ message: 'Invalid priceID' });
+    }
+
+    dynamicContent.updatePriceRecord(priceID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error updating price record:', err);
+            return res.status(500).json({ message: 'Error updating price record' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.delete('/api/admin/prices/:priceID', (req, res) => {
+    const priceID = parseId(req.params.priceID);
+    if (!priceID) {
+        return res.status(400).json({ message: 'Invalid priceID' });
+    }
+
+    dynamicContent.deletePriceRecord(priceID, (err, result) => {
+        if (err) {
+            console.error('Error deleting price record:', err);
+            return res.status(500).json({ message: 'Error deleting price record' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.get('/api/admin/houses/:houseID/community-planning', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.fetchCommunityPlanningByHouse(houseID, (err, results) => {
+        if (err) {
+            console.error('Error listing community planning:', err);
+            return res.status(500).json({ message: 'Error listing community planning' });
+        }
+        res.json(results);
+    });
+});
+
+app.post('/api/admin/houses/:houseID/community-planning', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.createCommunityPlanning(houseID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error creating community planning:', err);
+            return res.status(500).json({ message: 'Error creating community planning' });
+        }
+        res.status(201).json({ success: true, insertedId: result.insertId });
+    });
+});
+
+app.put('/api/admin/community-planning/:communityID', (req, res) => {
+    const communityID = parseId(req.params.communityID);
+    if (!communityID) {
+        return res.status(400).json({ message: 'Invalid communityID' });
+    }
+
+    dynamicContent.updateCommunityPlanning(communityID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error updating community planning:', err);
+            return res.status(500).json({ message: 'Error updating community planning' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.delete('/api/admin/community-planning/:communityID', (req, res) => {
+    const communityID = parseId(req.params.communityID);
+    if (!communityID) {
+        return res.status(400).json({ message: 'Invalid communityID' });
+    }
+
+    dynamicContent.deleteCommunityPlanning(communityID, (err, result) => {
+        if (err) {
+            console.error('Error deleting community planning:', err);
+            return res.status(500).json({ message: 'Error deleting community planning' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.post('/api/admin/houses/:houseID/latest-news', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.createLatestNews(houseID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error creating latest news:', err);
+            return res.status(500).json({ message: 'Error creating latest news' });
+        }
+        res.status(201).json({ success: true, insertedId: result.insertId });
+    });
+});
+
+app.put('/api/admin/latest-news/:newsID', (req, res) => {
+    const newsID = parseId(req.params.newsID);
+    if (!newsID) {
+        return res.status(400).json({ message: 'Invalid newsID' });
+    }
+
+    dynamicContent.updateLatestNews(newsID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error updating latest news:', err);
+            return res.status(500).json({ message: 'Error updating latest news' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.delete('/api/admin/latest-news/:newsID', (req, res) => {
+    const newsID = parseId(req.params.newsID);
+    if (!newsID) {
+        return res.status(400).json({ message: 'Invalid newsID' });
+    }
+
+    dynamicContent.deleteLatestNews(newsID, (err, result) => {
+        if (err) {
+            console.error('Error deleting latest news:', err);
+            return res.status(500).json({ message: 'Error deleting latest news' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.get('/api/admin/houses/:houseID/surrounding-facilities', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.fetchSurroundingFacilitiesByHouse(houseID, (err, results) => {
+        if (err) {
+            console.error('Error listing surrounding facilities:', err);
+            return res.status(500).json({ message: 'Error listing surrounding facilities' });
+        }
+        res.json(results);
+    });
+});
+
+app.post('/api/admin/houses/:houseID/surrounding-facilities', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.createSurroundingFacility(houseID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error creating surrounding facility:', err);
+            return res.status(500).json({ message: 'Error creating surrounding facility' });
+        }
+        res.status(201).json({ success: true, insertedId: result.insertId });
+    });
+});
+
+app.put('/api/admin/surrounding-facilities/:facilityID', (req, res) => {
+    const facilityID = parseId(req.params.facilityID);
+    if (!facilityID) {
+        return res.status(400).json({ message: 'Invalid facilityID' });
+    }
+
+    dynamicContent.updateSurroundingFacility(facilityID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error updating surrounding facility:', err);
+            return res.status(500).json({ message: 'Error updating surrounding facility' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.delete('/api/admin/surrounding-facilities/:facilityID', (req, res) => {
+    const facilityID = parseId(req.params.facilityID);
+    if (!facilityID) {
+        return res.status(400).json({ message: 'Invalid facilityID' });
+    }
+
+    dynamicContent.deleteSurroundingFacility(facilityID, (err, result) => {
+        if (err) {
+            console.error('Error deleting surrounding facility:', err);
+            return res.status(500).json({ message: 'Error deleting surrounding facility' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.get('/api/admin/search-filters', (req, res) => {
+    dynamicContent.fetchSearchFiltersAdmin((err, results) => {
+        if (err) {
+            console.error('Error listing search filters:', err);
+            return res.status(500).json({ message: 'Error listing search filters' });
+        }
+        res.json(results);
+    });
+});
+
+app.post('/api/admin/search-filters', (req, res) => {
+    dynamicContent.createSearchFilter(req.body, (err, result) => {
+        if (err) {
+            console.error('Error creating search filter:', err);
+            return res.status(500).json({ message: 'Error creating search filter' });
+        }
+        res.status(201).json({ success: true, insertedId: result.insertId });
+    });
+});
+
+app.put('/api/admin/search-filters/:filterID', (req, res) => {
+    const filterID = parseId(req.params.filterID);
+    if (!filterID) {
+        return res.status(400).json({ message: 'Invalid filterID' });
+    }
+
+    dynamicContent.updateSearchFilter(filterID, req.body, (err, result) => {
+        if (err) {
+            console.error('Error updating search filter:', err);
+            return res.status(500).json({ message: 'Error updating search filter' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
+});
+
+app.delete('/api/admin/search-filters/:filterID', (req, res) => {
+    const filterID = parseId(req.params.filterID);
+    if (!filterID) {
+        return res.status(400).json({ message: 'Invalid filterID' });
+    }
+
+    dynamicContent.deleteSearchFilter(filterID, (err, result) => {
+        if (err) {
+            console.error('Error deleting search filter:', err);
+            return res.status(500).json({ message: 'Error deleting search filter' });
+        }
+        res.json({ success: true, affectedRows: result.affectedRows });
+    });
 });
 
 function getNetworkAddress() {
