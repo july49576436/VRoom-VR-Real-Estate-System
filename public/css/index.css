@@ -49,13 +49,15 @@ header button:hover{
 
 .search-container {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between; /* 左右兩邊對齊 */
-    gap: 10px;
+    gap: 16px;
 }
 
 .search-left {
     display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
     gap: 10px;
     padding: 20px;
     margin-top: 20px;
@@ -64,22 +66,49 @@ header button:hover{
     background-color: #fff8d2;
 }
 
+.search-left form {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
 .search-keyword {
-    margin-left: 20px;
+    margin-left: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 8px;
+    flex: 1 1 440px;
+    min-width: 0;
 }
 
 .search-keyword input{
-    width: 400px;
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.search-keyword button {
+    flex: 0 0 40px;
 }
 
 .search-right {
     display: flex;
+    align-items: center;
     gap: 10px;
     margin-top: 20px;
     margin-bottom: 20px;
 }
-.city{
-    margin: 0px 0px 10px 0px;
+.city,
+.districts {
+    margin: 0;
 }
 .search-container select,
 .search-container input[type="search"] {

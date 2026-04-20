@@ -465,6 +465,21 @@ app.post('/api/admin/houses/:houseID/latest-news', (req, res) => {
     });
 });
 
+app.get('/api/admin/houses/:houseID/latest-news', (req, res) => {
+    const houseID = parseId(req.params.houseID);
+    if (!houseID) {
+        return res.status(400).json({ message: 'Invalid houseID' });
+    }
+
+    dynamicContent.fetchLatestNews(houseID, (err, results) => {
+        if (err) {
+            console.error('Error listing latest news:', err);
+            return res.status(500).json({ message: 'Error listing latest news' });
+        }
+        res.json(results);
+    });
+});
+
 app.put('/api/admin/latest-news/:newsID', (req, res) => {
     const newsID = parseId(req.params.newsID);
     if (!newsID) {

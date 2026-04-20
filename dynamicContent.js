@@ -178,7 +178,7 @@ const fetchFeaturedHouses = (flagColumn, callback) => {
             h.houseID AS id,
             h.Name AS name,
             COALESCE(MAX(hi.Img), '/image/NTU.jpg') AS main_image,
-            h.PricePerUnit AS unit_price,
+            h.TotalPrice AS total_price,
             COALESCE(MAX(sf.district), '未提供') AS district,
             COALESCE(MAX(sf.houseType), '住宅') AS type,
             h.RoomLayout AS layout,
@@ -187,7 +187,7 @@ const fetchFeaturedHouses = (flagColumn, callback) => {
         LEFT JOIN house_images hi ON hi.houseID = h.houseID
         LEFT JOIN searchfilters sf ON sf.houseID = h.houseID
         WHERE COALESCE(h.\`${flagColumn}\`, '') <> ''
-        GROUP BY h.houseID, h.Name, h.PricePerUnit, h.RoomLayout, h.Area
+        GROUP BY h.houseID, h.Name, h.TotalPrice, h.RoomLayout, h.Area
         ORDER BY h.houseID DESC
         LIMIT 12
     `;
@@ -207,29 +207,40 @@ const listHouses = (callback) => {
 };
 
 const createHouse = (data, callback) => {
-    const sql = `
-        INSERT INTO house (
-            houseID, Name, Address, PricePerUnit, TotalPrice, RoomLayout, Area,
-            CompletionYear, ParkingPrice, VR, Description, recommend, new, price_reduction
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    const params = [
-        data.houseID,
-        data.Name,
-        data.Address,
-        data.PricePerUnit,
-        data.TotalPrice,
-        data.RoomLayout,
-        data.Area,
-        data.CompletionYear,
-        data.ParkingPrice,
-        data.VR || null,
-        data.Description || null,
-        data.recommend || null,
-        data.new || null,
-        data.price_reduction || null
-    ];
-    connection.query(sql, params, callback);
+    const insertHouse = (houseID) => {
+        const sql = `
+            INSERT INTO house (
+                houseID, Name, Address, PricePerUnit, TotalPrice, RoomLayout, Area,
+                CompletionYear, ParkingPrice, VR, Description, recommend, new, price_reduction
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        const params = [
+            houseID,
+            data.Name,
+            data.Address,
+            data.PricePerUnit,
+            data.TotalPrice,
+            data.RoomLayout,
+            data.Area,
+            data.CompletionYear,
+            data.ParkingPrice || null,
+            data.VR || null,
+            data.Description || null,
+            data.recommend || null,
+            data.new || null,
+            data.price_reduction || null
+        ];
+        connection.query(sql, params, callback);
+    };
+
+    if (data.houseID) {
+        return insertHouse(data.houseID);
+    }
+
+    connection.query('SELECT COALESCE(MAX(houseID), 0) + 1 AS nextID FROM house', (err, results) => {
+        if (err) return callback(err, null);
+        insertHouse(results[0].nextID);
+    });
 };
 
 const updateHouse = (houseID, data, callback) => {

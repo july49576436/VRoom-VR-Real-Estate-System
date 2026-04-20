@@ -55,6 +55,42 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
 
 $(document).ready(() => {  // 等待DOM完全載入後執行
+    function formatTotalPrice(totalPrice) {
+        const raw = String(totalPrice || '').trim();
+        if (!raw) return '總價未提供';
+
+        if (raw.includes('萬')) {
+            const number = raw.replace(/[^0-9]/g, '');
+            return number ? `${Number(number).toLocaleString('zh-TW')}萬` : raw;
+        }
+
+        const digits = raw.replace(/[^0-9]/g, '');
+        if (!digits) return raw;
+        const inWan = Math.round(Number(digits) / 10000);
+        return `${inWan.toLocaleString('zh-TW')}萬`;
+    }
+
+    function buildHouseCard(house) {
+        const title = house.name || '';
+        const image = house.main_image || 'image/NTU.jpg';
+        const totalPrice = formatTotalPrice(house.total_price);
+        const district = house.district || '';
+        const type = house.type || '';
+        const layout = house.layout || '';
+        const size = house.size || '';
+
+        return `
+            <a class="property" href="house.html?houseID=${house.id}">
+                <img src="${image}" alt="${title}">
+                <div class="property-details">
+                    <h3>${title}</h3>
+                    <p>總價：${totalPrice}</p>
+                    <p>${district}/${type}/${layout}/${size}坪</p>
+                </div>
+            </a>
+        `;
+    }
+
     // 獲取推薦房屋
     $.ajax({
         url: '/api/recommendations',  // 向伺服器發送GET請求以獲取推薦房屋數據
@@ -62,19 +98,7 @@ $(document).ready(() => {  // 等待DOM完全載入後執行
         success: (data) => {  // 如果請求成功，執行此函數
             const container = $('#recommendations-container');  // 獲取推薦房屋容器
             data.forEach(house => {  // 對每個房屋數據執行以下操作
-                container.append(`  // 將房屋數據添加到容器中
-                    <div class="property">
-                        <a href="house/${house.id}">
-                            <img src="${house.main_image}" alt="${house.name}">
-                            <div class="property-details">
-                                <h3>${house.name}</h3>
-                        </a>
-                                <p>${house.unit_price}萬/坪</p>
-                                <p>${house.district}/${house.type}/${house.layout}/${house.size}坪</p>
-                            </div>
-                        </div>
-                    </div>
-                `);
+                container.append(buildHouseCard(house));
             });
         },
         error: (err) => {  // 如果請求失敗，執行此函數
@@ -89,19 +113,7 @@ $(document).ready(() => {  // 等待DOM完全載入後執行
         success: (data) => {  // 如果請求成功，執行此函數
             const container = $('#new-arrivals-container');  // 獲取新上架房屋容器
             data.forEach(house => {  // 對每個房屋數據執行以下操作
-                container.append(`  // 將房屋數據添加到容器中
-                    <div class="property">
-                        <a href="house/${house.id}">
-                            <img src="${house.main_image}" alt="${house.name}">
-                            <div class="property-details">
-                                <h3>${house.name}</h3>
-                        </a>
-                                <p>${house.unit_price}萬/坪</p>
-                                <p>${house.district}/${house.type}/${house.layout}/${house.size}坪</p>
-                            </div>
-                        </div>
-                    </div>
-                `);
+                container.append(buildHouseCard(house));
             });
         },
         error: (err) => {  // 如果請求失敗，執行此函數
@@ -116,19 +128,7 @@ $(document).ready(() => {  // 等待DOM完全載入後執行
         success: (data) => {  // 如果請求成功，執行此函數
             const container = $('#price-drop-container');  // 獲取降價中古屋容器
             data.forEach(house => {  // 對每個房屋數據執行以下操作
-                container.append(`  // 將房屋數據添加到容器中
-                    <div class="property">
-                        <a href="house/${house.id}">
-                            <img src="${house.main_image}" alt="${house.name}">
-                            <div class="property-details">
-                                <h3>${house.name}</h3>
-                        </a>
-                                <p>${house.unit_price}萬/坪</p>
-                                <p>${house.district}/${house.type}/${house.layout}/${house.size}坪</p>
-                            </div>
-                        </div>
-                    </div>
-                `);
+                container.append(buildHouseCard(house));
             });
         },
         error: (err) => {  // 如果請求失敗，執行此函數

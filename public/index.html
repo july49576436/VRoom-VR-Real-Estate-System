@@ -36,7 +36,7 @@
                 <!-- 左側篩選 -->
                 <div class="search-left">
                     <form>
-                        <div class="city">
+                        <div class="city field-group">
                             <label for="cities">縣市:</label>
                             <select id="cities" name="cities" onchange="showDistricts()">
                                 <option value="">-- 請選擇縣市 --</option>
@@ -64,43 +64,46 @@
                                 <option value="lienchiang_county">連江縣 (Lienchiang County)</option>
                             </select>
                         </div>
-                        <div id="districts" class="districts" style="display: none;">
+                        <div id="districts" class="districts field-group" style="display: none;">
                             <label for="district">區域:</label>
                             <select id="district" name="district">
                                 <option value="">-- 請選擇區域 --</option>
-                                <!-- 區域選項會根據縣市動態顯示 -->
                             </select>
                         </div>
                     </form>
-                    <label for="price-filter">價格:</label>
-                    <select id="price-filter" name="price-filter" onchange="applyPriceFilter()">
-                        <option value="">不限價格</option>
-                        <option value="0-1000">1000萬以下</option>
-                        <option value="1000-5000">1000萬 - 1500萬</option>
-                        <option value="5000-10000">1500萬 - 2000萬</option>
-                        <option value="10000-">2000萬 - 3000萬</option>
-                        <option value="10000-">3000萬 - 4000萬</option>
-                        <option value="10000-">4000萬以上</option>
-                    </select>
-                    <label for="type-filter">類型:</label>
-                    <select id="type-filter" name="type-filter" onchange="applyTypeFilter()">
-                        <option value="">不限類型</option>
-                        <option value="type1">住宅</option>
-                        <option value="type2">商用</option>
-                        <option value="type3">住辦</option>
-                        <option value="type4">土地</option>
-                        <option value="type5">車位</option>
-                        <option value="type6">廠房</option>
-                        <option value="type7">其他</option>
-                    </select>
-                    <div class="search-keyword">
+                    <div class="field-group">
+                        <label for="price-filter">價格:</label>
+                        <select id="price-filter" name="price-filter" onchange="applyPriceFilter()">
+                            <option value="">不限價格</option>
+                            <option value="0-1000">1000萬以下</option>
+                            <option value="1000-1500">1000萬 - 1500萬</option>
+                            <option value="1500-2000">1500萬 - 2000萬</option>
+                            <option value="2000-3000">2000萬 - 3000萬</option>
+                            <option value="3000-4000">3000萬 - 4000萬</option>
+                            <option value="4000-">4000萬以上</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="type-filter">類型:</label>
+                        <select id="type-filter" name="type-filter" onchange="applyTypeFilter()">
+                            <option value="">不限類型</option>
+                            <option value="type1">住宅</option>
+                            <option value="type2">商用</option>
+                            <option value="type3">住辦</option>
+                            <option value="type4">土地</option>
+                            <option value="type5">車位</option>
+                            <option value="type6">廠房</option>
+                            <option value="type7">其他</option>
+                        </select>
+                    </div>
+                    <div class="search-keyword field-group">
                         <input type="search" id="search" name="search" placeholder="關鍵字(街道, 捷運站)">
                         <button type="button" id="search-btn">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
                 </div>
-    
+
                 <div class="search-right button-container">
                     <a href="#recommendations">推薦</a>
                     <a href="#new-arrivals">新上架</a>
@@ -110,97 +113,93 @@
         </section>
         <div id="results"></div>
         <hr>
-        
+
         <section id="recommendations">
             <h2>推薦</h2>
             <div class="survey" id="recommendations-container">
-                <div class="property">
-                    <a href="house.html?houseID=2">
-                        <img src="image/house1.jpg" alt="Pineapple House">
-                        <div class="property-details">
-                            <h3>國際名蝦柏有豪華戶</h3>
-                    </a>
+                <a class="property" href="house.html?houseID=2">
+                    <img src="image/house1.jpg" alt="Pineapple House">
+                    <div class="property-details">
+                        <h3>國際名蝦柏有豪華戶</h3>
                         <p>$230萬/坪</p>
                         <p>中山區/住宅/3房/2廳/102坪</p>
                     </div>
-                </div>
-                <div class="property">
-                    <a href="house.html?houseID=3">
+                </a>
+                <a class="property" href="house.html?houseID=3">
                     <img src="image/NTU.jpg" alt="Squidward House">
                     <div class="property-details">
-                        <h3>國立臺灣大學綜合體育館</h3></a>
+                        <h3>國立臺灣大學綜合體育館</h3>
                         <p>$250萬/坪</p>
                         <p>大安區/3房/2廳/102坪</p>
                     </div>
-                </div>
-                <div class="property">
-                    <a href="house.html?houseID=1">
+                </a>
+                <a class="property" href="house.html?houseID=1">
                     <img src="image/house3.jpg" alt="Patrick House">
                     <div class="property-details">
-                        <h3>高檔裝潢景觀美別墅</h3></a>
+                        <h3>高檔裝潢景觀美別墅</h3>
                         <p>$5900萬</p>
                         <p>中山區/住宅/3房/2廳/102坪</p>
                     </div>
-                </div>
+                </a>
             </div>
         </section>
         <section id="new-arrivals">
             <h2>新上架</h2>
             <div class="survey" id="new-arrivals-container">
-                <div class="property">
+                <a class="property" href="house.html?houseID=4">
                     <img src="image/house4.jpg" alt="Patrick House">
                     <div class="property-details">
                         <h3>高檔裝潢景觀美別墅</h3>
                         <p>$5900萬</p>
                         <p>中山區/住宅/3房/2廳/102坪</p>
                     </div>
-                </div>
-                <div class="property">
+                </a>
+                <a class="property" href="house.html?houseID=5">
                     <img src="image/house5.jpg" alt="Patrick House">
                     <div class="property-details">
                         <h3>高檔裝潢景觀美別墅</h3>
                         <p>$5900萬</p>
                         <p>中山區/住宅/3房/2廳/102坪</p>
                     </div>
-                </div>
-                <div class="property">
+                </a>
+                <a class="property" href="house.html?houseID=6">
                     <img src="image/house6.jpg" alt="Patrick House">
                     <div class="property-details">
                         <h3>高檔裝潢景觀美別墅</h3>
                         <p>$5900萬</p>
                         <p>中山區/住宅/3房/2廳/102坪</p>
                     </div>
-                </div>
+                </a>
             </div>
         </section>
 
         <section id="price-drop">
             <h2>降價中古屋</h2>
             <div class="survey" id="price-drop-container">
-                <div class="property">
+                <a class="property" href="house.html?houseID=7">
                     <img src="image/house7.jpg" alt="Patrick House">
                     <div class="property-details">
                         <h3>高檔裝潢景觀美別墅</h3>
                         <p>$5900萬</p>
                         <p>中山區/住宅/3房/2廳/102坪</p>
                     </div>
-                </div>
-                <div class="property">
+                </a>
+                <a class="property" href="house.html?houseID=8">
                     <img src="image/house8.jpg" alt="Patrick House">
                     <div class="property-details">
                         <h3>高檔裝潢景觀美別墅</h3>
                         <p>$5900萬</p>
                         <p>中山區/住宅/3房/2廳/102坪</p>
                     </div>
-                </div>
-                <div class="property">
+                </a>
+                <a class="property" href="house.html?houseID=9">
                     <img src="image/house9.jpg" alt="Patrick House">
                     <div class="property-details">
                         <h3>高檔裝潢景觀美別墅</h3>
                         <p>$5900萬</p>
                         <p>中山區/住宅/3房/2廳/102坪</p>
                     </div>
-                </div>
+                </a>
             </div>
         </section>
         <footer>

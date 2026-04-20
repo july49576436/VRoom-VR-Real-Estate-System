@@ -1,13 +1,30 @@
 const db = require('./database');
 
+function buildTotalPriceExpression(column) {
+    return `CASE
+        WHEN ${column} LIKE '%萬%' THEN CAST(REGEXP_REPLACE(${column}, '[^0-9]', '') AS UNSIGNED)
+        ELSE CAST(REGEXP_REPLACE(${column}, '[^0-9]', '') AS UNSIGNED) / 10000
+    END`;
+}
+
+function parsePriceRange(priceRange) {
+    if (!priceRange) return null;
+    const [minValue, maxValue] = String(priceRange).split('-');
+    const min = Number(minValue);
+    const max = maxValue ? Number(maxValue) : null;
+    if (Number.isNaN(min)) return null;
+    return { min, max: Number.isNaN(max) ? null : max };
+}
+
 function searchHouses(city, district, priceRange, houseType, callback) {
+    const totalPriceExpression = buildTotalPriceExpression('h.TotalPrice');
     let query = `
         SELECT
             h.houseID AS id,
             h.Name AS name,
             h.Address AS address,
-            h.PricePerUnit AS priceperunit,
             h.TotalPrice AS totalprice,
+            ${totalPriceExpression} AS totalprice_wan,
             h.RoomLayout AS roomlayout,
             h.Area AS area
         FROM house h
@@ -25,9 +42,14 @@ function searchHouses(city, district, priceRange, houseType, callback) {
         query += ' AND sf.district = ?';
         values.push(district);
     }
-    if (priceRange && priceRange !== '不限') {
-        query += ' AND sf.PriceRange = ?';
-        values.push(priceRange);
+    const parsedRange = parsePriceRange(priceRange);
+    if (parsedRange) {
+        query += ` AND ${totalPriceExpression} >= ?`;
+        values.push(parsedRange.min);
+        if (parsedRange.max !== null) {
+            query += ` AND ${totalPriceExpression} < ?`;
+            values.push(parsedRange.max);
+        }
     }
     if (houseType && houseType !== '不限') {
         query += ' AND sf.houseType = ?';

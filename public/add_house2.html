@@ -3,113 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新增房屋資訊</title>
+    <title>VRoom 管理後台</title>
     <link rel="stylesheet" href="css/add_house.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const links = document.querySelectorAll('.sidebar ul li a');
-            const sections = document.querySelectorAll('.content-section');
-    
-            links.forEach(link => {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault();
-    
-                    // 移除所有連結的 active 樣式
-                    links.forEach(link => link.classList.remove('active'));
-                    // 將當前點擊的連結標記為 active
-                    this.classList.add('active');
-    
-                    // 隱藏所有內容區域
-                    sections.forEach(section => section.classList.remove('active'));
-                    // 顯示選定的內容區域
-                    const activeSection = document.getElementById(this.getAttribute('data-section'));
-                    activeSection.classList.add('active');
-                });
-            });
-        });
-    </script>
-    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 </head>
 <body>
-    <!-- 開頭 -->
     <header>
         <a href="index.html"><div class="logo">V ROOM</div></a>
         <nav>
             <a href="index.html">房屋總覽</a>
-            <a href="#information">房仲資訊</a>&nbsp;&nbsp;
-            <button>登入</button>
+            <a href="#admin-panel">管理後台</a>
+            <button onclick="location.href='index.html'">回首頁</button>
         </nav>
     </header>
-    
-    <!-- 表單內容替換 main -->
-    <main>
-        <!-- Sidebar -->
-<div class="sidebar">
-    <ul>
-        <li><a href="#" data-section="section1" class="active">房屋資料</a></li>
-        <li><a href="#" data-section="section2">房屋位置</a></li>
-        <li><a href="#" data-section="section3">建材資訊</a></li>
-    </ul>
-</div>
 
+    <main class="admin-layout" id="admin-panel">
+        <aside class="sidebar">
+            <ul>
+                <li><a href="#house-crud" data-section="house-crud" class="active">建案管理</a></li>
+                <li><a href="#image-crud" data-section="image-crud">圖片管理</a></li>
+                <li><a href="#price-crud" data-section="price-crud">價格管理</a></li>
+                <li><a href="#community-crud" data-section="community-crud">社區規劃</a></li>
+                <li><a href="#latest-crud" data-section="latest-crud">最新消息</a></li>
+                <li><a href="#facility-crud" data-section="facility-crud">周邊設施</a></li>
+                <li><a href="#searchfilter-crud" data-section="searchfilter-crud">搜尋條件</a></li>
+            </ul>
+        </aside>
 
-        <div class="form-container">
-            <h1>新增房屋資訊</h1>
-            <form action="add_house_data.php" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="house-name">房屋名稱</label>
-                    <input type="text" id="house-name" name="house_name" required>
-                </div>
-                <div class="form-group">
-                    <label for="location">地址</label>
-                    <input type="text" id="location" name="location" required>
-                </div>
-                <div class="form-group">
-                    <label for="price-per-unit">建坪單價 (萬/坪)</label>
-                    <input type="number" id="price-per-unit" name="price_per_unit" required>
-                </div>
-                <div class="form-group">
-                    <label for="parking-price">車位價格 (萬)</label>
-                    <input type="number" id="parking-price" name="parking_price">
-                </div>
-                <div class="form-group">
-                    <label for="layout">格局</label>
-                    <input type="text" id="layout" name="layout" placeholder="如: 2房2廳" required>
-                </div>
-                <div class="form-group">
-                    <label for="area">坪數範圍</label>
-                    <input type="text" id="area" name="area" placeholder="如: 30~40坪" required>
-                </div>
-                <div class="form-group">
-                    <label for="completion-year">完工年份</label>
-                    <input type="number" id="completion-year" name="completion_year" min="1900" max="2099" required>
-                </div>
-                <div class="upload-grid">
-                    <div class="upload-box">
-                        <label for="houseModel">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp上傳房屋建模檔</label>
-                        <input type="file" id="houseModel" class="file-input">
+        <section class="content-area">
+            <div class="page-title">
+                <h1>管理後台</h1>
+                <p>這一頁會直接呼叫後端 CRUD API，資料會真的寫入 MySQL。</p>
+            </div>
+
+            <section class="content-section active" id="house-crud">
+                <div class="panel-grid">
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>建案清單</h2>
+                            <button type="button" class="ghost-button" id="refreshHouses">重新整理</button>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>名稱</th>
+                                        <th>地址</th>
+                                        <th>單價</th>
+                                        <th>總價</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="houseTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="upload-box">
-                        <label for="panoramaImage">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp上傳 360 度照片</label>
-                        <input type="file" id="panoramaImage" class="file-input">
+
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>建案 CRUD</h2>
+                            <span class="hint">先點清單列，會自動帶入編輯</span>
+                        </div>
+                        <form id="houseForm" class="crud-form">
+                            <div class="grid-2">
+                                <label>ID<input type="number" name="houseID" placeholder="新增時可留空"></label>
+                                <label>名稱<input type="text" name="Name" required></label>
+                                <label>地址<input type="text" name="Address" required></label>
+                                <label>建坪單價<input type="text" name="PricePerUnit" required></label>
+                                <label>總價<input type="text" name="TotalPrice" required></label>
+                                <label>格局<input type="text" name="RoomLayout" required></label>
+                                <label>坪數<input type="text" name="Area" required></label>
+                                <label>完工年份<input type="text" name="CompletionYear" required></label>
+                                <label>車位價格<input type="text" name="ParkingPrice"></label>
+                                <label>VR 連結<input type="text" name="VR"></label>
+                                <label class="full">描述<textarea name="Description" rows="3"></textarea></label>
+                                <label>推薦<input type="text" name="recommend"></label>
+                                <label>新上架<input type="text" name="new"></label>
+                                <label>降價<input type="text" name="price_reduction"></label>
+                            </div>
+                            <div class="button-row">
+                                <button type="submit" name="mode" value="create">新增</button>
+                                <button type="button" id="updateHouseBtn">更新</button>
+                                <button type="button" class="danger" id="deleteHouseBtn">刪除</button>
+                                <button type="button" class="ghost-button" id="clearHouseForm">清空</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                
-                <div class="button-container">
-                    <button type="submit" class="submit-button">確認送出</button>
+            </section>
+
+            <section class="content-section" id="searchfilter-crud">
+                <div class="panel-grid single">
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>搜尋條件清單</h2>
+                            <button type="button" class="ghost-button" id="refreshFilters">重新整理</button>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>縣市</th>
+                                        <th>區域</th>
+                                        <th>總價區間</th>
+                                        <th>類型</th>
+                                        <th>建案ID</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="filterTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>搜尋條件 CRUD</h2>
+                            <span class="hint">建立搜尋頁面的篩選資料</span>
+                        </div>
+                        <form id="filterForm" class="crud-form">
+                            <div class="grid-2">
+                                <label>ID<input type="number" name="filterID" placeholder="新增時可留空"></label>
+                                <label>縣市<input type="text" name="city" required></label>
+                                <label>區域<input type="text" name="district" required></label>
+                                <label>總價區間<input type="text" name="PriceRange" required></label>
+                                <label>類型<input type="text" name="houseType" required></label>
+                                <label>建案ID<input type="number" name="houseID" required></label>
+                            </div>
+                            <div class="button-row">
+                                <button type="submit" name="mode" value="create">新增</button>
+                                <button type="button" id="updateFilterBtn">更新</button>
+                                <button type="button" class="danger" id="deleteFilterBtn">刪除</button>
+                                <button type="button" class="ghost-button" id="clearFilterForm">清空</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </form>
-        </div>
+            </section>
+
+            <section class="content-section" id="image-crud">
+                <div class="panel-grid single">
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>圖片清單</h2>
+                            <div class="resource-toolbar">
+                                <label>建案 ID <input type="number" id="imageHouseID" value="1"></label>
+                                <button type="button" class="ghost-button" id="loadImageHouseBtn">載入</button>
+                                <button type="button" class="ghost-button" id="refreshImages">重新整理</button>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>圖片ID</th>
+                                        <th>建案ID</th>
+                                        <th>圖片路徑</th>
+                                        <th>描述</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="imageTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>圖片 CRUD</h2>
+                            <span class="hint">修改圖片路徑與描述</span>
+                        </div>
+                        <form id="imageForm" class="crud-form">
+                            <div class="grid-2">
+                                <label>圖片ID<input type="number" name="ImageID" placeholder="新增時可留空"></label>
+                                <label>建案ID<input type="number" name="houseID" value="1" required></label>
+                                <label class="full">圖片路徑<input type="text" name="Img" placeholder="/image/NTU.jpg"></label>
+                                <label class="full">圖片描述<input type="text" name="Img_description" placeholder="圖片說明"></label>
+                            </div>
+                            <div class="button-row">
+                                <button type="submit">新增</button>
+                                <button type="button" id="updateImageBtn">更新</button>
+                                <button type="button" class="danger" id="deleteImageBtn">刪除</button>
+                                <button type="button" class="ghost-button" id="clearImageForm">清空</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section" id="price-crud">
+                <div class="panel-grid single">
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>價格清單</h2>
+                            <div class="resource-toolbar">
+                                <label>建案 ID <input type="number" id="priceHouseID" value="1"></label>
+                                <button type="button" class="ghost-button" id="loadPriceHouseBtn">載入</button>
+                                <button type="button" class="ghost-button" id="refreshPrices">重新整理</button>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>價格ID</th>
+                                        <th>建案ID</th>
+                                        <th>交易日期</th>
+                                        <th>樓層</th>
+                                        <th>單價</th>
+                                        <th>總價</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="priceTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>價格 CRUD</h2>
+                            <span class="hint">實價登錄與統計</span>
+                        </div>
+                        <form id="priceForm" class="crud-form">
+                            <div class="grid-2">
+                                <label>價格ID<input type="number" name="PriceID" placeholder="新增時可留空"></label>
+                                <label>建案ID<input type="number" name="houseID" value="1" required></label>
+                                <label>交易日期<input type="date" name="TransactionDate"></label>
+                                <label>成交價<input type="text" name="TransctionPrice"></label>
+                                <label>樓層<input type="text" name="Floor"></label>
+                                <label>單價<input type="text" name="PricePerUnit"></label>
+                                <label>總價<input type="text" name="TotalPrice"></label>
+                                <label>格局詳情<input type="text" name="RoomDetails"></label>
+                                <label>兩年均價<input type="text" name="twoyear"></label>
+                                <label>三年均價<input type="text" name="threeyear"></label>
+                                <label>其他年份<input type="text" name="otheryear"></label>
+                                <label>平均單價<input type="text" name="avgprice"></label>
+                            </div>
+                            <div class="button-row">
+                                <button type="submit">新增</button>
+                                <button type="button" id="updatePriceBtn">更新</button>
+                                <button type="button" class="danger" id="deletePriceBtn">刪除</button>
+                                <button type="button" class="ghost-button" id="clearPriceForm">清空</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section" id="community-crud">
+                <div class="panel-grid single">
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>社區規劃清單</h2>
+                            <div class="resource-toolbar">
+                                <label>建案 ID <input type="number" id="communityHouseID" value="1"></label>
+                                <button type="button" class="ghost-button" id="loadCommunityHouseBtn">載入</button>
+                                <button type="button" class="ghost-button" id="refreshCommunity">重新整理</button>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>社區ID</th>
+                                        <th>建案ID</th>
+                                        <th>建案資訊</th>
+                                        <th>停車類型</th>
+                                        <th>管理費</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="communityTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>社區規劃 CRUD</h2>
+                            <span class="hint">填入欄位即可寫入</span>
+                        </div>
+                        <form id="communityForm" class="crud-form">
+                            <div class="grid-2">
+                                <label>社區ID<input type="number" name="community_ID" placeholder="新增時可留空"></label>
+                                <label>建案ID<input type="number" name="houseID" value="1" required></label>
+                                <label>公設比<input type="text" name="PublicFacilityRatio"></label>
+                                <label>樓層規劃<input type="text" name="BuildingRage"></label>
+                                <label>基地面積<input type="text" name="SiteArea"></label>
+                                <label>車位比<input type="text" name="ParkingRatio"></label>
+                                <label>停車類型<input type="text" name="ParkingType"></label>
+                                <label>建案資訊<input type="text" name="BuildingInfo"></label>
+                                <label>格局規劃<input type="text" name="FloorPlanning"></label>
+                                <label>座向<input type="text" name="Orientation"></label>
+                                <label>建照<input type="text" name="BuildingPermit"></label>
+                                <label>使照<input type="text" name="UsagePermit"></label>
+                                <label>建材<input type="text" name="BuildingMaterial"></label>
+                                <label>公共設施<input type="text" name="PublicFacilities"></label>
+                                <label>管理費<input type="text" name="ManagementFee"></label>
+                                <label>使用分區<input type="text" name="LandUseZoning"></label>
+                                <label>物業管理<input type="text" name="Propertymanagement"></label>
+                                <label>管委會<input type="text" name="man_committee"></label>
+                                <label>營造商<input type="text" name="constructure"></label>
+                            </div>
+                            <div class="button-row">
+                                <button type="submit">新增</button>
+                                <button type="button" id="updateCommunityBtn">更新</button>
+                                <button type="button" class="danger" id="deleteCommunityBtn">刪除</button>
+                                <button type="button" class="ghost-button" id="clearCommunityForm">清空</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section" id="latest-crud">
+                <div class="panel-grid single">
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>最新消息清單</h2>
+                            <div class="resource-toolbar">
+                                <label>建案 ID <input type="number" id="latestHouseID" value="1"></label>
+                                <button type="button" class="ghost-button" id="loadLatestHouseBtn">載入</button>
+                                <button type="button" class="ghost-button" id="refreshLatest">重新整理</button>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>消息ID</th>
+                                        <th>建案ID</th>
+                                        <th>日期</th>
+                                        <th>狀態</th>
+                                        <th>內容</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="latestTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>最新消息 CRUD</h2>
+                            <span class="hint">更新施工與銷售訊息</span>
+                        </div>
+                        <form id="latestForm" class="crud-form">
+                            <div class="grid-2">
+                                <label>消息ID<input type="number" name="newsID" placeholder="新增時可留空"></label>
+                                <label>建案ID<input type="number" name="houseID" value="1" required></label>
+                                <label>日期<input type="date" name="con_date"></label>
+                                <label>狀態<input type="text" name="house_state"></label>
+                                <label class="full">內容<textarea name="content_describe" rows="4"></textarea></label>
+                            </div>
+                            <div class="button-row">
+                                <button type="submit">新增</button>
+                                <button type="button" id="updateLatestBtn">更新</button>
+                                <button type="button" class="danger" id="deleteLatestBtn">刪除</button>
+                                <button type="button" class="ghost-button" id="clearLatestForm">清空</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section" id="facility-crud">
+                <div class="panel-grid single">
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>周邊設施清單</h2>
+                            <div class="resource-toolbar">
+                                <label>建案 ID <input type="number" id="facilityHouseID" value="1"></label>
+                                <button type="button" class="ghost-button" id="loadFacilityHouseBtn">載入</button>
+                                <button type="button" class="ghost-button" id="refreshFacilities">重新整理</button>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>設施ID</th>
+                                        <th>建案ID</th>
+                                        <th>地圖 URL</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="facilityTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel card">
+                        <div class="panel-header">
+                            <h2>周邊設施 CRUD</h2>
+                            <span class="hint">地圖或連結路徑</span>
+                        </div>
+                        <form id="facilityForm" class="crud-form">
+                            <div class="grid-2">
+                                <label>設施ID<input type="number" name="facilityID" placeholder="新增時可留空"></label>
+                                <label>建案ID<input type="number" name="houseID" value="1" required></label>
+                                <label class="full">地圖 URL<input type="text" name="mapURL"></label>
+                            </div>
+                            <div class="button-row">
+                                <button type="submit">新增</button>
+                                <button type="button" id="updateFacilityBtn">更新</button>
+                                <button type="button" class="danger" id="deleteFacilityBtn">刪除</button>
+                                <button type="button" class="ghost-button" id="clearFacilityForm">清空</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </section>
     </main>
 
-    <!-- 頁尾 -->
     <footer>
         <h2>VRoom</h2>
-        <p>地址:</p>
-        <p>客服專線:03-1234567</p>
-        <p>客服信箱:cycu112vr@gmail.com</p>
+        <p>VRoom 管理後台</p>
     </footer>
+
+    <script src="javascript/admin.js"></script>
 </body>
 </html>
