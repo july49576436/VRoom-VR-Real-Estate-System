@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增房屋資訊</title>
+    <link rel="stylesheet" href="css/add_house.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const links = document.querySelectorAll('.sidebar ul li a');
+            const sections = document.querySelectorAll('.content-section');
+    
+            links.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+    
+                    // 移除所有連結的 active 樣式
+                    links.forEach(link => link.classList.remove('active'));
+                    // 將當前點擊的連結標記為 active
+                    this.classList.add('active');
+    
+                    // 隱藏所有內容區域
+                    sections.forEach(section => section.classList.remove('active'));
+                    // 顯示選定的內容區域
+                    const activeSection = document.getElementById(this.getAttribute('data-section'));
+                    activeSection.classList.add('active');
+                });
+            });
+        });
+    </script>
+    
+</head>
+<body>
+    <!-- 開頭 -->
+    <header>
+        <a href="index.html"><div class="logo">V ROOM</div></a>
+        <nav>
+            <a href="index.html">房屋總覽</a>
+            <a href="#information">房仲資訊</a>&nbsp;&nbsp;
+            <button>登入</button>
+        </nav>
+    </header>
+    
+    <!-- 表單內容替換 main -->
+    <main>
+        <!-- Sidebar -->
+<div class="sidebar">
+    <ul>
+        <li><a href="#" data-section="section1" class="active">房屋資料</a></li>
+        <li><a href="#" data-section="section2">房屋位置</a></li>
+        <li><a href="#" data-section="section3">建材資訊</a></li>
+    </ul>
+</div>
+
+
+        <div class="form-container">
+            <h1>新增房屋資訊</h1>
+            <form action="add_house_data.php" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="house-name">房屋名稱</label>
+                    <input type="text" id="house-name" name="house_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">地址</label>
+                    <input type="text" id="location" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="price-per-unit">建坪單價 (萬/坪)</label>
+                    <input type="number" id="price-per-unit" name="price_per_unit" required>
+                </div>
+                <div class="form-group">
+                    <label for="parking-price">車位價格 (萬)</label>
+                    <input type="number" id="parking-price" name="parking_price">
+                </div>
+                <div class="form-group">
+                    <label for="layout">格局</label>
+                    <input type="text" id="layout" name="layout" placeholder="如: 2房2廳" required>
+                </div>
+                <div class="form-group">
+                    <label for="area">坪數範圍</label>
+                    <input type="text" id="area" name="area" placeholder="如: 30~40坪" required>
+                </div>
+                <div class="form-group">
+                    <label for="completion-year">完工年份</label>
+                    <input type="number" id="completion-year" name="completion_year" min="1900" max="2099" required>
+                </div>
+                <div class="upload-grid">
+                    <div class="upload-box">
+                        <label for="houseModel">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp上傳房屋建模檔</label>
+                        <input type="file" id="houseModel" class="file-input">
+                    </div>
+                    <div class="upload-box">
+                        <label for="panoramaImage">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp上傳 360 度照片</label>
+                        <input type="file" id="panoramaImage" class="file-input">
+                    </div>
+                </div>
+                
+                <div class="button-container">
+                    <button type="submit" class="submit-button">確認送出</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- 頁尾 -->
+    <footer>
+        <h2>VRoom</h2>
+        <p>地址:</p>
+        <p>客服專線:03-1234567</p>
+        <p>客服信箱:cycu112vr@gmail.com</p>
+    </footer>
+</body>
+</html>

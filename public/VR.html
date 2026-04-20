@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VRoom</title>
+    <!-- 引入 three.js 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <!-- 引入 OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- 引入 GLTFLoader -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+    <div id="viewer"></div>
+    <!-- 返回按钮 -->
+    <button id="back-button" style="display: none; position: absolute; top: 20px; left: 20px; z-index: 10;">返回</button>
+    <!-- 进入360全景的按钮 -->
+    <button id="enter-360-button" style="display: none; position: absolute; bottom: 20px; right: 20px; z-index: 10;">进入360全景</button>
+
+    <!-- 正確引用 VRButton.js -->
+    <script type="module">
+        import { VRButton } from 'https://unpkg.com/three@latest/examples/jsm/webxr/VRButton.js';
+
+        let scene, camera, renderer, controls;
+        let model;
+        let in360View = false;
+        const interactiveObjects = [];
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        const backButton = document.getElementById('back-button');
+        const enter360Button = document.getElementById('enter-360-button');
+        let selected360ImagePath = null;
+        const tempMatrix = new THREE.Matrix4();
+        // 移動相關變數
+        let moveSpeed = 0.01; // 移動速度
+        const moveDirection = new THREE.Vector3(); // 用於儲存移動方向
+
+        // 初始化场景、相机和渲染器
+        
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.layers.disable(2); // 禁用相機對第 2 層的渲染
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('viewer').appendChild(renderer.domElement);
+        let sphere;
+        // 创建相机父对象
+        const cameraParent = new THREE.Group();
+        cameraParent.add(camera);
+        scene.add(cameraParent);
+        // 啟用 WebXR 支援
+        renderer.xr.enabled = true;
+        document.body.appendChild(VRButton.createButton(renderer)); // 添加 VR 按鈕
+
+        // 初始化 OrbitControls
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.1;
+        controls.enablePan = false;
+        controls.enableZoom = false; // 禁用縮放
+        controls.enableRotate = true;
+        controls.rotateSpeed = 1.0;
+        controls.update();
+
+        // 添加光源
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(0, 1, 1).normalize();
+        scene.add(light);
+
+        // 加载模型与 360 图片
+        function fetchHouseModel(houseID) {
+            fetch(`/api/test/model?houseID=${houseID}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const glbFileName = data[0].houseModelFloorsFileName;
+                        const houseModelFloorsInitX = data[0].houseModelFloorInitX;
+                        const houseModelFloorsInitY = data[0].houseModelFloorInitY;
+                        const houseModelFloorsInitZ = data[0].houseModelFloorInitZ;
+                        camera.position.set(houseModelFloorsInitX, houseModelFloorsInitY, houseModelFloorsInitZ);
+                        cameraParent.position.set(houseModelFloorsInitX, houseModelFloorsInitY, houseModelFloorsInitZ);
+                        controls.target.set(houseModelFloorsInitX + 0.2, houseModelFloorsInitY, houseModelFloorsInitZ);
+                        controls.update();
+
+                        if (glbFileName) {
+                            const loader = new THREE.GLTFLoader();
+                            loader.load(`/3D_data/${glbFileName}`, function (gltf) {
+                                model = gltf.scene;
+                                scene.add(model);
+                                // 計算模型範圍並設置相機的最大縮放距離
+                                const boundingBox = new THREE.Box3().setFromObject(model);  // 計算模型的包圍盒
+                                const size = boundingBox.getSize(new THREE.Vector3());  // 取得模型的寬度、高度和深度
+                                const maxSize = Math.max(size.x, size.y, size.z);  // 找到最大尺寸
+
+                                // 設置 maxDistance 為模型最大尺寸的兩倍，讓縮放距離合適
+                                controls.maxDistance = maxSize / 2 -1;
+
+                                data.forEach((entry) => {
+                                    const imagePath = entry.houseModelFloors360FileName;
+                                    if (imagePath) {
+                                        const position = {
+                                            x: entry.houseModelFloors360InitX,
+                                            y: entry.houseModelFloors360InitY,
+                                            z: entry.houseModelFloors360InitZ
+                                        };
+                                        const interactiveObject = create360Button(`/360_Photo_test/${imagePath}`, position);
+                                        interactiveObjects.push(interactiveObject);
+                                        
+                                    }
+                                });
+                            });
+                        }
+                    }
+                })
+                .catch(error => console.error('加载数据时发生错误:', error));
+        }
+
+        // 创建 360 图片按钮
+        function create360Button(imagePath, position) {
+            // 原始創建按鈕的部分
+            const buttonGeometry = new THREE.SphereGeometry(0.2, 32, 32); // 小球體
+            const textureLoader = new THREE.TextureLoader();
+            const texture = textureLoader.load(imagePath);
+            
+            
+            const buttonMaterial = new THREE.MeshBasicMaterial({
+                map: texture,
+                transparent: true,
+                opacity: 1
+            });
+
+            const button = new THREE.Mesh(buttonGeometry, buttonMaterial);
+            button.position.set(position.x, position.y, position.z);
+            scene.add(button);
+            interactiveObjects.push(button); // 加入互動對象
+
+            // 新增：添加碰撞範圍可視化框
+            // const collisionBoxGeometry = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+            // const wireframe = new THREE.WireframeGeometry(collisionBoxGeometry);
+            // const collisionBox = new THREE.LineSegments(wireframe, new THREE.LineBasicMaterial({ color: 0xff0000 }));
+            // collisionBox.position.set(position.x, position.y, position.z);
+            // collisionBox.layers.set(2); // 現在 collisionBox 已經被定義，可以安全地設置層級
+            // scene.add(collisionBox); // 不加入 interactiveObjects，僅供觀察
+
+            // 新增：文字和箭頭提示的 HTML 元素
+            const textDiv = document.createElement('div');
+            textDiv.style.position = 'absolute';
+            textDiv.style.color = 'white';
+            textDiv.style.fontSize = '12px';
+            textDiv.innerHTML = 'Click &rarr;';
+            textDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            textDiv.style.padding = '5px';
+            document.body.appendChild(textDiv);
+
+            // 更新文字位置的函數
+            function updateLabelPosition() {
+                const vector = button.position.clone().project(camera);
+                const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+                const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+                textDiv.style.left = `${x + 10}px`;
+                textDiv.style.top = `${y}px`;
+            }
+
+            button.lookAt(camera.position); // 保持朝向相機
+            button.userData.updateLabelPosition = updateLabelPosition;
+            button.userData.imagePath = imagePath;
+
+            return button;
+        }
+
+
+        // 新增：顯示退出按鈕，並定位於右下角
+        function showExitButton() {
+            backButton.style.display = 'block';
+            backButton.style.position = 'absolute';
+            backButton.style.top = '10px';  // 右上角
+            backButton.style.right = '10px';  // 靠近右邊
+            backButton.style.width = '40px';  // 縮小按鈕大小
+            backButton.style.height = '40px';
+            backButton.style.fontSize = '12px';  // 縮小字體
+            backButton.style.zIndex = 10;
+        }
+
+        // 新增：隱藏退出按鈕
+        function hideExitButton() {
+            backButton.style.display = 'none';
+        }
+
+        // 进入 360 全景模式
+        function enter360View(imagePath) {
+            in360View = true;
+            if (sphere) {
+                scene.remove(sphere);
+                sphere = null;
+            }
+            // 隐藏模型和交互对象
+            if (model) model.visible = false;
+            interactiveObjects.forEach(obj => obj.visible = false);
+
+            const textureLoader = new THREE.TextureLoader();
+            const sphereGeometry = new THREE.SphereGeometry(5, 60, 40);
+            const sphereMaterial = new THREE.MeshBasicMaterial({
+                map: textureLoader.load(imagePath),
+                side: THREE.DoubleSide
+            });
+            sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphere.scale.x = -1;
+            scene.add(sphere); // 直接添加到场景中
+            sphere.visible = true; // 确保球体可见
+            raycaster.layers.set(0); // 射線投射只檢測第 0 層
+            showExitButton(); // 顯示退出按鈕
+            showMessage("按下右手控制器側鍵以退出 360 圖片模式");
+            // 啟動 `renderWithGamepad` 為主要渲染循環
+            renderer.setAnimationLoop(renderWithGamepad);      
+        }
+
+        // 退出 360 全景模式
+        function exit360View() {
+            in360View = false;
+
+        // 移除 360 球体
+        if (sphere) {
+            scene.remove(sphere);
+            sphere = null;
+        }
+
+        // 显示模型和交互对象
+        if (model) model.visible = true;
+        interactiveObjects.forEach(obj => obj.visible = true);
+        // 移除 360 球
+        hideExitButton(); // 隱藏退出按鈕
+
+        backButton.style.display = 'none';
+        controls.enableZoom = false;
+        controls.enablePan = false;
+        controls.enableRotate = true;
+        renderer.setAnimationLoop(renderWithMovement); // 恢复移动控制的动画循环
+        }
+        function check360ButtonInView() {
+            let buttonInView = false;
+            const frustum = new THREE.Frustum();
+            const cameraViewProjectionMatrix = new THREE.Matrix4();
+
+            camera.updateMatrixWorld(); // 更新相机矩阵
+            camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
+
+            cameraViewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+            frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
+
+            interactiveObjects.forEach((button) => {
+                if (frustum.intersectsObject(button)) {
+                    buttonInView = true;
+                    selected360ImagePath = button.userData.imagePath;
+                }
+            });
+
+            if (buttonInView && !in360View) {
+                enter360Button.style.display = 'block';
+            } else {
+                enter360Button.style.display = 'none';
+                selected360ImagePath = null;
+            }
+        }
+
+        // 绑定进入360按钮点击事件
+        enter360Button.addEventListener('click', () => {
+            if (selected360ImagePath) {
+                enter360View(selected360ImagePath);
+            }
+        });
+
+        // 绑定返回按钮点击事件
+        backButton.addEventListener('click', () => {
+            exit360View();
+        });
+
+        let controllerLeft, controllerRight; // 左手和右手控制器
+        let enterVR = false; // 用來檢查是否已進入 VR 模式
+
+        
+        function setupVRControls() {
+             // 左手控制器設置
+            controllerLeft = renderer.xr.getController(0);
+            cameraParent.add(controllerLeft);
+            controllerLeft.addEventListener('selectstart', onSelectStart); // 左手柄觸發進入360模式
+
+            // 右手控制器設置
+            controllerRight = renderer.xr.getController(1);
+            cameraParent.add(controllerRight);
+            controllerRight.addEventListener('selectstart', onSelectStart); // 右手柄觸發
+            // VR 会话事件监听4
+            renderer.xr.addEventListener('sessionstart', () => {
+                controls.enabled = false; // 禁用 OrbitControls
+                renderer.setAnimationLoop(renderWithMovement); // 进入 VR 模式后启用移动
+            });
+            renderer.xr.addEventListener('sessionend', () => {
+                controls.enabled = true; // 启用 OrbitControls
+                renderer.setAnimationLoop(render); // 退出 VR 模式后恢复正常渲染
+            });
+            // 添加可視化的光線（laser pointer）
+            const geometry = new THREE.BufferGeometry().setFromPoints([ new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -1) ]);
+
+            const line = new THREE.Line(geometry);
+            line.name = 'line';
+            line.scale.z = 5;
+
+            controllerRight.add(line.clone());
+            controllerLeft.add(line.clone());
+                }
+
+        function renderWithMovement() {
+            if (!in360View) {
+                updateMovement(); // 更新移動方向
+                // camera.position.add(moveDirection); // 移動相機位置
+            }
+            render(); // 執行正常渲染
+        }
+
+        function checkCollision(newPosition) {
+            const direction = newPosition.clone().sub(cameraParent.position).normalize();
+            direction.y = 0; // 確保僅在水平面上移動
+            raycaster.layers.set(0); // 僅檢測第 0 層物件
+            raycaster.set(cameraParent.position, direction);
+
+            // 只檢測第 0 層的物件
+            const objectsToTest = scene.children.filter(obj => obj.layers.test(raycaster.layers));
+
+            const intersects = raycaster.intersectObjects(objectsToTest, true);
+            return intersects.length > 0 && intersects[0].distance < 0.5;
+        }
+
+        // 新增 updateMovement 函數
+        function updateMovement() {
+            moveDirection.set(0, 0, 0);
+            const session = renderer.xr.getSession();
+            if (session && !in360View) {
+                const inputSources = session.inputSources;
+                for (const source of inputSources) {
+                    if (source.handedness === 'right' && source.gamepad) {
+                        const axes = source.gamepad.axes;
+                        console.log('Axes:', axes);
+
+                        // 遍历所有轴，找出变化的轴
+                        axes.forEach((value, index) => {
+                            console.log(`Axis ${index}: ${value}`);
+                        });
+
+                        // 确定正确的轴索引
+                        let x = axes[2] !== undefined ? axes[2] : axes[0];
+                        let y = axes[3] !== undefined ? axes[3] : axes[1];
+
+                        console.log(`Joystick axes: x=${x}, y=${y}`);
+
+                        if (Math.abs(x) > 0.1 || Math.abs(y) > 0.1) {
+                            moveDirection.set(x * moveSpeed, 0,y * moveSpeed);
+                            moveDirection.applyQuaternion(camera.quaternion);
+                            moveDirection.y = 0; // 僅水平移動
+                            // 移动相机父对象
+                            const newPosition = cameraParent.position.clone().add(moveDirection);
+                            if (!checkCollision(newPosition)) {
+                                cameraParent.position.add(moveDirection);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 渲染循環，包含對B鍵的檢查
+        function renderWithGamepad() {
+            // 確認是否有VR會話並檢查右手控制器的側鍵是否按下
+            const session = renderer.xr.getSession();
+            if (session) {
+                const inputSources = session.inputSources;
+
+                inputSources.forEach((source) => {
+                    if (source.handedness === 'right' && source.gamepad && source.gamepad.buttons.length > 2) {
+                        const sideButtonPressed = source.gamepad.buttons[1].pressed; // 側鍵按鈕
+
+                        if (sideButtonPressed && in360View) {
+                            // 如果當前在 360 視圖中，按下側鍵應退出 360 視圖
+                            exit360View();
+                            showMessage("已退出 360 圖片模式");
+                        }
+                    }
+                });
+            }
+
+            render(); // 繼續執行正常渲染
+        }
+
+        // 新增：當手柄B鍵觸發時退出 360 圖片
+        function onBButtonPressed() {
+            if (in360View) {
+                exit360View();
+                showMessage("已退出 360 圖片模式");
+            }
+        }
+        // 新增：顯示提示信息
+        function showMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            messageElement.style.position = 'absolute';
+            messageElement.style.bottom = '50px';
+            messageElement.style.right = '20px';
+            messageElement.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            messageElement.style.color = 'white';
+            messageElement.style.padding = '10px';
+            messageElement.style.zIndex = 10;
+            document.body.appendChild(messageElement);
+            
+            // 新增：自動消失提示信息
+            setTimeout(() => {
+                document.body.removeChild(messageElement);
+            }, 2000); // 2秒後自動隱藏
+        }
+        // 新增：當手柄點擊觸發時進入 360 視圖
+        function onSelectStart(event) {
+            const controller = event.target;
+
+            if (in360View) {
+                // 如果在 360 模式中，則退出
+                exit360View();
+                showMessage("已退出 360 图片模式");
+            } else {
+                // 從控制器位置和方向進行射線投射
+                tempMatrix.identity().extractRotation(controller.matrixWorld);
+
+                raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+                raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+
+                raycaster.layers.set(0); // 只檢測第 0 層
+
+                const intersects = raycaster.intersectObjects(interactiveObjects, true);
+
+                if (intersects.length > 0) {
+                    const intersected = intersects[0].object;
+                    if (intersected.userData.imagePath) {
+                        enter360View(intersected.userData.imagePath);
+                        showMessage("进入 360 图片模式");
+                    }
+                }
+            }
+        }
+
+        // function checkRightControllerBButton() {
+        //     const session = renderer.xr.getSession();
+        //     if (session) {
+        //         const inputSources = session.inputSources;
+        //         for (const source of inputSources) {
+        //             if (source.handedness === 'right' && source.gamepad && source.gamepad.buttons.length > 1) {
+        //                 const bButtonPressed = source.gamepad.buttons[1].pressed; // 按鈕索引1通常對應B鍵
+        //                 if (bButtonPressed && in360View) {
+        //                     exit360View();
+        //                     showMessage("已退出 360 圖片模式");
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        // 呼叫 setupVRControls 函數，啟動 VR 控制器
+        setupVRControls();
+        renderer.setAnimationLoop(renderWithGamepad);
+
+
+
+
+        // 渲染循环
+        function animate() {
+            renderer.setAnimationLoop(renderWithMovement);
+        }
+
+        function render() {
+            if (!in360View) {
+                check360ButtonInView();
+                interactiveObjects.forEach(obj => {
+                    if (obj.userData.updateLabelPosition) obj.userData.updateLabelPosition();
+                });
+            }
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            setupVRControls(); // 新增：初始化 VR 控制器
+            const houseID = getQueryParam('houseID');
+            if (houseID) {
+                fetchHouseModel(houseID);
+            }
+            animate();
+        });
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // 更新窗口大小
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

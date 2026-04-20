@@ -27,16 +27,13 @@ DROP TABLE IF EXISTS `latest_news`;
 CREATE TABLE `latest_news` (
   `newsID` int(11) NOT NULL AUTO_INCREMENT,
   `houseID` int(11) NOT NULL,
-  `Content0` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `Content1` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `Content2` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `Content3` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `Content4` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `Content5` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `house_state` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `con_date` date DEFAULT NULL,
+  `content_describe` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`newsID`),
   KEY `houseID_idx` (`houseID`),
   CONSTRAINT `fk_latest_news_house` FOREIGN KEY (`houseID`) REFERENCES `house` (`houseID`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +42,7 @@ CREATE TABLE `latest_news` (
 
 LOCK TABLES `latest_news` WRITE;
 /*!40000 ALTER TABLE `latest_news` DISABLE KEYS */;
-INSERT INTO `latest_news` VALUES (1,1,'2019年4月已開案','2019年3月 可交屋','2024年3月15日 建案可售格局為2房2衛40坪，劃售自製個位數，其他產品已售罄，現場備有貴品屋可參觀。','2024年7月10日 建案可售格局為2房2衛41坪，劃售自製最後三戶，其他產品已售罄，現場備有貴品屋可參觀。',NULL,NULL);
+INSERT INTO `latest_news` VALUES (1,1,'已開案','2019-04-01',NULL),(2,1,'可交屋','2019-03-01',NULL),(3,1,NULL,'2024-03-15','建案可售格局為2房2衛40坪，劃售自製個位數，其他產品已售罄，現場備有貴品屋可參觀。'),(4,1,NULL,'2024-07-10','建案可售格局為2房2衛41坪，劃售自製最後三戶，其他產品已售罄，現場備有貴品屋可參觀。');
 /*!40000 ALTER TABLE `latest_news` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -58,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-05 21:17:53
+-- Dump completed on 2024-08-09 21:26:44

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>市府微風松菸美寓</title>
+    <link rel="stylesheet" href="css/house.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'></script>
+</head>
+<body>
+    <!--開頭 -->
+    <header>
+        <a href="index.html"><div class="logo">V ROOM</div></a>
+        <nav>
+            <a href="index.html">房屋總覽</a>
+            <a href="#information">房仲資訊</a>&nbsp;&nbsp;
+            <button>登入</button>
+        </nav>
+    </header>
+     <!--內容 -->
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="#latest-news">最新動態</a></li>
+            <li><a href="#community-planning">社區規劃</a></li>
+            <li><a href="#price-registration">實價登入</a></li>
+            <li><a href="#surrounding-facilities">周邊機能</a></li>
+        </ul>
+    </div>
+    <main>
+        <header>
+            <h1>市府微風松菸美寓</h1>
+            <p>地址 台北市信義區永吉路 | 建坪單價 120 萬/坪</p>
+            <nav>
+                <a href="#">首頁</a> &gt; <a href="#">台北市</a> &gt; <a href="#">信義區</a> &gt; 市府微風松菸美寓
+            </nav>
+        </header>
+        <div class="summary">
+            <div class="image-container">
+                <img id="main-image" src="image/house2.jpg" alt="Building Image">
+            </div>
+            <div class="info">
+                <div class="price-info">
+                    <div class="price-per-unit">
+                        <h2 style="color: red; display: inline-block; margin-right: 5px;">120</h2>
+                        <h4 style="display: inline-block;">萬/坪</h4>
+                    </div>
+                    <ul>
+                        <li>車位:300萬</li>
+                        <li>格局：2房2廳</li>
+                        <li>坪數：30~40坪</li>
+                        <li>交屋: 隨時交屋</li>
+                        <li>完工：2022年</li>
+                        <li>基地地址：台北市信義區永吉路</li>
+                    </ul>
+                    <button>VR導覽</button>
+                </div>
+            </div>
+        </div>
+        <aside class="image-navigation">
+            <div class="thumbnail">
+                <img src="image/house2.jpg" alt="Layout" onclick="changeImage('image/house2.jpg')">
+                <div class="caption">外觀</div>
+            </div>
+            <div class="thumbnail">
+                <img src="image/layout.jpg" alt="Transportation" onclick="changeImage('image/layout.jpg')">
+                <div class="caption">格局</div>
+            </div>
+            <div class="thumbnail">
+                <img src="image/inside.jpg" alt="Environment" onclick="changeImage('image/inside.jpg')">
+                <div class="caption">環境</div>
+            </div>
+            <div class="thumbnail">
+                <img src="https://picsum.photos/id/240/200" alt="360 View" onclick="changeImage('https://picsum.photos/id/240/600/400')">
+                <div class="caption">360度全景</div>
+            </div>
+        </aside>
+        <div class="sections-container">
+            <section id="latest-news">
+                <h2>最新動態</h2>
+                <div class="latest-news-container">
+                    <div class="horizontal-timeline">
+                        <div class="horizontal-timeline-item completed">
+                            <div class="horizontal-timeline-content">
+                                <div class="horizontal-timeline-date">已開案<br>2019年4月</div>
+                                <div class="horizontal-timeline-arrow"></div>
+                            </div>
+                        </div>
+                        <div class="horizontal-timeline-item completed">
+                            <div class="horizontal-timeline-content">
+                                <div class="horizontal-timeline-date">可交屋<br>2019年3月</div>
+                                <div class="horizontal-timeline-arrow"></div>
+                            </div>
+                        </div>
+                        <div class="horizontal-timeline-item">
+                            <div class="horizontal-timeline-content">
+                                <div class="horizontal-timeline-date">2024年3月15日</div>
+                                <div class="horizontal-timeline-text">建案可售格局為2房2衛40坪，劃售自製個位數，其他產品已售罄，現場備有貴品屋可參觀。</div>
+                                <div class="horizontal-timeline-arrow"></div>
+                            </div>
+                        </div>
+                        <div class="horizontal-timeline-item active last">
+                            <div class="horizontal-timeline-content">
+                                <div class="horizontal-timeline-date">2024年7月10日</div>
+                                <div class="horizontal-timeline-text">建案可售格局為2房2衛41坪，劃售自製最後三戶，其他產品已售罄，現場備有貴品屋可參觀。</div>
+                                <div class="horizontal-timeline-arrow"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="community-planning">
+                <h2>社區規劃</h2>
+                <div class="community-planning-container">
+                    <div class="community-stats">
+                        <div>
+                            <span class="label">公設比</span>
+                            <span class="value">33%</span>
+                        </div>
+                        <div>
+                            <span class="label">建蔽率</span>
+                            <span class="value">35.2%</span>
+                        </div>
+                        <div>
+                            <span class="label">基地面積</span>
+                            <span class="value">140.2坪</span>
+                        </div>
+                    </div>
+                    <div class="community-details">
+                        <ul>
+                            <li>車位配比: 1:1.6</li>
+                            <li>車位規劃: 機械式5個</li>
+                            <li>棟戶規劃: 1棟，1樓，4戶住家</li>
+                            <li>樓層規劃: 地上6層，地下2層</li>
+                            <li>座向規劃: 朝東、朝西</li>
+                            <li>建造執照: 106建字第0090號</li>
+                            <li>使用執照: 109使字第0025號</li>
+                            <li>建材說明: RC鋼構</li>
+                        </ul>
+                        <ul>
+                            <li>公共設施: 健身房、接待大廳</li>
+                            <li>物業公司: 有</li>
+                            <li>管委會: 民國109年成立</li>
+                            <li>管理費用: 40~60元/坪</li>
+                            <li>結構工程: RC鋼筋混凝土結構</li>
+                            <li>土地分區: 第三種住宅區</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="price-registration">
+                <h2>實價登入</h2>
+                <div class="price-registration-container">
+                    <div class="price-header">
+                        <div class="current-price">
+                            <span class="label">成交均價</span>
+                            <span class="value" style="color: red; font-size: 32px;">120</span>
+                            <span class="unit" style="font-size: 16px;"> 萬/坪</span>
+                        </div>
+                        <div class="average-prices">
+                            <div>
+                                <span class="label">2年均價</span>
+                                <span class="value">118</span>
+                                <span class="unit" style="font-size: 16px;"> 萬/坪</span>
+                            </div>
+                            <div>
+                                <span class="label">3年均價</span>
+                                <span class="value">115</span>
+                                <span class="unit" style="font-size: 16px;"> 萬/坪</span>
+                            </div>
+                            <div>
+                                <span class="label">其他均價</span>
+                                <span class="value">119</span>
+                                <span class="unit" style="font-size: 16px;"> 萬/坪</span>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="price-table">
+                        <tr>
+                            <th>成交年月</th>
+                            <th>樓層</th>
+                            <th>單價</th>
+                            <th>房屋</th>
+                            <th>總價</th>
+                        </tr>
+                        <tr>
+                            <td>112-05</td>
+                            <td>7樓</td>
+                            <td>120<span class="unit" style="font-size: 16px;"> 萬/坪</span></td>
+                            <td>2房2廳/35坪</td>
+                            <td>4,200 萬</td>
+                        </tr>
+                        <tr>
+                            <td>112-02</td>
+                            <td>3樓</td>
+                            <td>118<span class="unit" style="font-size: 16px;"> 萬/坪</span></td>
+                            <td>2房2廳/35坪</td>
+                            <td>4,130 萬</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+            
+            
+            <section id="surrounding-facilities">
+                <h2>周邊機能</h2>
+                <div class="map">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14458.35637493058!2d121.5692206340851!3d25.048015180411554!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442ab9884cae453%3A0x26e27c4a5e7ec826!2z5Y-w5YyX5biC5rC45ZCJ6Lev!5e0!3m2!1szh-TW!2stw!4v1721912925126!5m2!1szh-TW!2stw" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </section>
+        </div>
+    </main>
+    <footer>
+        <h2>VRoom</h2>
+        <p>地址:</p>
+        <P>客服專線:03-1234567</P>
+        <p>客服信箱:cycu112vr@gmail.com</p>
+    </footer>
+    <script>
+        function changeImage(src) {
+            document.getElementById('main-image').src = src;
+        }
+
+        // Function to handle the sidebar visibility and active link
+        function handleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sections = document.querySelectorAll('section');
+            const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
+            const sidebarHeight = sidebar.offsetHeight;
+
+            window.addEventListener('scroll', function() {
+                const scrollPosition = window.scrollY;
+                const windowHeight = window.innerHeight;
+
+                // Handle sidebar fixed positioning
+                const basicInfoSection = document.querySelector('#latest-news');
+                const basicInfoTop = basicInfoSection.getBoundingClientRect().top + scrollPosition;
+
+                if (scrollPosition >= basicInfoTop) {
+                    sidebar.classList.add('fixed');
+                } else {
+                    sidebar.classList.remove('fixed');
+                }
+
+                // Handle active link highlighting
+                sections.forEach(function(section, index) {
+                    if (section.offsetTop <= scrollPosition && section.offsetTop + section.offsetHeight > scrollPosition) {
+                        sidebarLinks.forEach(function(link) {
+                            link.classList.remove('active');
+                        });
+                        sidebarLinks[index].classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Initialize the sidebar handling function
+        handleSidebar();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const timelineItems = document.querySelectorAll('.horizontal-timeline-item');
+            
+            function handleScroll() {
+                const scrollPosition = window.scrollY + window.innerHeight;
+                
+                timelineItems.forEach((item, index) => {
+                    if (item.getBoundingClientRect().top + window.scrollY < scrollPosition - 100) {
+                        setTimeout(() => {
+                            item.classList.add('visible');
+                        }, index * 300); // 逐個延遲進入動畫
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', handleScroll);
+            handleScroll(); // 初始化檢查滾動位置
+        });
+    </script>
+</body>
+</html>

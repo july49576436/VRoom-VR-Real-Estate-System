@@ -33,10 +33,14 @@ CREATE TABLE `price` (
   `PricePerUnit` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `TotalPrice` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `RoomDetails` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `twoyear` int(11) DEFAULT NULL,
+  `threeyear` int(11) DEFAULT NULL,
+  `otheryear` int(11) DEFAULT NULL,
+  `avgprice` int(11) DEFAULT NULL,
   PRIMARY KEY (`PriceID`),
   KEY `fk_price` (`houseID`),
   CONSTRAINT `fk_price` FOREIGN KEY (`houseID`) REFERENCES `house` (`houseID`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +49,7 @@ CREATE TABLE `price` (
 
 LOCK TABLES `price` WRITE;
 /*!40000 ALTER TABLE `price` DISABLE KEYS */;
-INSERT INTO `price` VALUES (1,1,'112/5','120萬/坪','7層','120萬/坪','4,200 萬','2房2廳/35坪');
+INSERT INTO `price` VALUES (1,1,'112-05','120萬/坪','7樓','120','4,200','2房2廳/35坪',118,115,119,120),(2,1,'112-02','','3樓','118','4,130','2房2廳/35坪',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `price` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -58,4 +62,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-05 21:17:53
+-- Dump completed on 2024-08-09 21:26:44

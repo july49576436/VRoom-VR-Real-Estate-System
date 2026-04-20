@@ -4,7 +4,8 @@
   "description": "Vroom_web",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,9 @@
   },
   "homepage": "https://github.com/tritestar/Vroom_Web#readme",
   "dependencies": {
-    "express": "^4.19.2",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
     "mysql2": "^3.11.0"
-  }
+  },
+  "keywords": []
 }

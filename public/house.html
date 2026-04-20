@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>市府微風松菸美寓</title>
     <link rel="stylesheet" href="css/house.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'></script>
 </head>
 <body>
-    <!--開頭 -->
     <header>
         <a href="index.html"><div class="logo">V ROOM</div></a>
         <nav>
@@ -18,7 +15,6 @@
             <button>登入</button>
         </nav>
     </header>
-     <!--內容 -->
     <div class="sidebar" id="sidebar">
         <ul>
             <li><a href="#latest-news">最新動態</a></li>
@@ -29,52 +25,63 @@
     </div>
     <main>
         <header>
-            <h1>市府微風松菸美寓</h1>
-            <p>地址 台北市信義區永吉路 | 建坪單價 120 萬/坪</p>
+            <h1 id="house-name">房產名稱</h1>
+            <p id="house-address">地址信息</p>
+
+            <!--還沒改-->
             <nav>
                 <a href="#">首頁</a> &gt; <a href="#">台北市</a> &gt; <a href="#">信義區</a> &gt; 市府微風松菸美寓
             </nav>
+            <!--還沒改-->
+
         </header>
         <div class="summary">
             <div class="image-container">
-                <img id="main-image" src="image/house2.jpg" alt="Building Image">
+                <img id="main-image" src="default.jpg" alt="Building Image">
             </div>
             <div class="info">
                 <div class="price-info">
                     <div class="price-per-unit">
-                        <h2 style="color: red; display: inline-block; margin-right: 5px;">120</h2>
-                        <h4 style="display: inline-block;">萬/坪</h4>
+                        <h2 id="price-per-unit" style="color: red; display: inline-block; margin-right: 5px;">價格</h2>
+                        <h4 style="display: inline-block;"></h4>
                     </div>
                     <ul>
-                        <li>車位:300萬</li>
-                        <li>格局：2房2廳</li>
-                        <li>坪數：30~40坪</li>
-                        <li>交屋: 隨時交屋</li>
-                        <li>完工：2022年</li>
-                        <li>基地地址：台北市信義區永吉路</li>
+                        <li id="parking-price">車位價格</li>
+                        <li id="room-layout">房間格局</li>
+                        <li id="area">坪數</li>
+                        <li id="description_house">交屋狀況</li>
+                        <li id="completion-year">完工年份</li>
+                        <li id="address">房產地址</li>
                     </ul>
-                    <button>VR導覽</button>
+                    <button id="vr-button">VR導覽</button>
+                    <div id="comments-section">
+                        <h2>評論區</h2>
+                            <div class="comment-container" id="comment-container">
+                                <!-- 預設顯示的評論 -->
+                                <div class="comment">用戶1: 很棒的房產！</div>
+                                <div class="comment">用戶2: 跟現場一模一樣耶!</div>
+                                <div class="comment">用戶3: 地段不錯</div>
+                                <div class="comment">用戶4: 價格可以再談談嗎？</div>
+                                <div class="comment">用戶5: 價格可以再談談嗎？</div>
+                            </div>
+                            <div class="comment-input">
+                                <input type="text" id="comment-text" placeholder="輸入你的評論..." />
+                                <button id="submit-comment">發送</button>
+                            </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <aside class="image-navigation">
-            <div class="thumbnail">
-                <img src="image/house2.jpg" alt="Layout" onclick="changeImage('image/house2.jpg')">
-                <div class="caption">外觀</div>
-            </div>
-            <div class="thumbnail">
-                <img src="image/layout.jpg" alt="Transportation" onclick="changeImage('image/layout.jpg')">
-                <div class="caption">格局</div>
-            </div>
-            <div class="thumbnail">
-                <img src="image/inside.jpg" alt="Environment" onclick="changeImage('image/inside.jpg')">
-                <div class="caption">環境</div>
-            </div>
-            <div class="thumbnail">
-                <img src="https://picsum.photos/id/240/200" alt="360 View" onclick="changeImage('https://picsum.photos/id/240/600/400')">
-                <div class="caption">360度全景</div>
-            </div>
+
+        <!--還沒改-->
+        <aside class="image-navigation" id="image-thumbnails">
+            <img src="thumb1.jpg" id="thumbnail1" alt="縮略圖1" class="thumbnail">
+            <img src="thumb2.jpg" id="thumbnail2" alt="縮略圖2" class="thumbnail">
+            <img src="thumb3.jpg" id="thumbnail3" alt="縮略圖3" class="thumbnail">
         </aside>
+        <!--還沒改-->
+
+        <!--還沒改-->
         <div class="sections-container">
             <section id="latest-news">
                 <h2>最新動態</h2>
@@ -82,27 +89,27 @@
                     <div class="horizontal-timeline">
                         <div class="horizontal-timeline-item completed">
                             <div class="horizontal-timeline-content">
-                                <div class="horizontal-timeline-date">已開案<br>2019年4月</div>
+                                <div class="horizontal-timeline-date" data-id="date-1"></div>
                                 <div class="horizontal-timeline-arrow"></div>
                             </div>
                         </div>
                         <div class="horizontal-timeline-item completed">
                             <div class="horizontal-timeline-content">
-                                <div class="horizontal-timeline-date">可交屋<br>2019年3月</div>
+                                <div class="horizontal-timeline-date" data-id="date-2"></div>
                                 <div class="horizontal-timeline-arrow"></div>
                             </div>
                         </div>
                         <div class="horizontal-timeline-item">
                             <div class="horizontal-timeline-content">
-                                <div class="horizontal-timeline-date">2024年3月15日</div>
-                                <div class="horizontal-timeline-text">建案可售格局為2房2衛40坪，劃售自製個位數，其他產品已售罄，現場備有貴品屋可參觀。</div>
+                                <div class="horizontal-timeline-date" data-id="date-3"></div>
+                                <div class="horizontal-timeline-text" data-id="description-3"></div>
                                 <div class="horizontal-timeline-arrow"></div>
                             </div>
                         </div>
                         <div class="horizontal-timeline-item active last">
                             <div class="horizontal-timeline-content">
-                                <div class="horizontal-timeline-date">2024年7月10日</div>
-                                <div class="horizontal-timeline-text">建案可售格局為2房2衛41坪，劃售自製最後三戶，其他產品已售罄，現場備有貴品屋可參觀。</div>
+                                <div class="horizontal-timeline-date" data-id="date-4"></div>
+                                <div class="horizontal-timeline-text" data-id="description-4"></div>
                                 <div class="horizontal-timeline-arrow"></div>
                             </div>
                         </div>
@@ -110,74 +117,81 @@
                 </div>
             </section>
             
-            <section id="community-planning">
+            <!--還沒改-->
+
+
+            <section id="community-planning"> <!--可動態-->
                 <h2>社區規劃</h2>
                 <div class="community-planning-container">
                     <div class="community-stats">
                         <div>
                             <span class="label">公設比</span>
-                            <span class="value">33%</span>
+                            <span id="public-facility" class="value"></span>
                         </div>
                         <div>
                             <span class="label">建蔽率</span>
-                            <span class="value">35.2%</span>
+                            <span id="building-coverage-ratio" class="value"></span>
                         </div>
                         <div>
                             <span class="label">基地面積</span>
-                            <span class="value">140.2坪</span>
+                            <span id="site-area" class="value"></span>
                         </div>
                     </div>
+
                     <div class="community-details">
                         <ul>
-                            <li>車位配比: 1:1.6</li>
-                            <li>車位規劃: 機械式5個</li>
-                            <li>棟戶規劃: 1棟，1樓，4戶住家</li>
-                            <li>樓層規劃: 地上6層，地下2層</li>
-                            <li>座向規劃: 朝東、朝西</li>
-                            <li>建造執照: 106建字第0090號</li>
-                            <li>使用執照: 109使字第0025號</li>
-                            <li>建材說明: RC鋼構</li>
+                            <li id="parking-ratio">車位配比</li>
+                            <li id="parking-type">車位類型</li>
+                            <li id="building-info">棟戶規劃</li>
+                            <li id="floor-planning">樓層規劃</li>
+                            <li id="orientation">座向規劃</li>
+                            <li id="building-permit">建造執照</li>
+                            <li id="usage-permit">使用執照</li>
+                            <li id="building-material">建材說明</li>
                         </ul>
                         <ul>
-                            <li>公共設施: 健身房、接待大廳</li>
-                            <li>物業公司: 有</li>
-                            <li>管委會: 民國109年成立</li>
-                            <li>管理費用: 40~60元/坪</li>
-                            <li>結構工程: RC鋼筋混凝土結構</li>
-                            <li>土地分區: 第三種住宅區</li>
+                            <li id="public-facilities">公共設施</li>
+                            <li id="property-management">物業公司</li>
+                            <li id="management-fee">管理費用</li>
+                            <li id="man-committee">管委會</li>
+                            <li id="land-use-zoning">土地分區</li>
+                            <li id="constructure">結構工程</li>
                         </ul>
                     </div>
                 </div>
             </section>
-            
-            <section id="price-registration">
+
+
+            <section id="price-registration"> <!--可動態-->
                 <h2>實價登入</h2>
                 <div class="price-registration-container">
-                    <div class="price-header">
+                    <div class="price-header" id="price-header">
                         <div class="current-price">
-                            <span class="label">成交均價</span>
-                            <span class="value" style="color: red; font-size: 32px;">120</span>
+                            <span class="label" >成交均價</span>
+                            <span class="value" id="avg-price" style="color: red; font-size: 32px;"></span>
                             <span class="unit" style="font-size: 16px;"> 萬/坪</span>
                         </div>
                         <div class="average-prices">
                             <div>
                                 <span class="label">2年均價</span>
-                                <span class="value">118</span>
+                                <span class="value" id="two-year"></span>
                                 <span class="unit" style="font-size: 16px;"> 萬/坪</span>
                             </div>
                             <div>
                                 <span class="label">3年均價</span>
-                                <span class="value">115</span>
+                                <span class="value" id="three-year"></span>
                                 <span class="unit" style="font-size: 16px;"> 萬/坪</span>
                             </div>
                             <div>
                                 <span class="label">其他均價</span>
-                                <span class="value">119</span>
+                                <span class="value" id="other-year"></span>
                                 <span class="unit" style="font-size: 16px;"> 萬/坪</span>
                             </div>
                         </div>
-                    </div>
-                    <table class="price-table">
+                    </div>     
+                    
+                    
+                    <table class="price-table" id="price-table">
                         <tr>
                             <th>成交年月</th>
                             <th>樓層</th>
@@ -185,29 +199,13 @@
                             <th>房屋</th>
                             <th>總價</th>
                         </tr>
-                        <tr>
-                            <td>112-05</td>
-                            <td>7樓</td>
-                            <td>120<span class="unit" style="font-size: 16px;"> 萬/坪</span></td>
-                            <td>2房2廳/35坪</td>
-                            <td>4,200 萬</td>
-                        </tr>
-                        <tr>
-                            <td>112-02</td>
-                            <td>3樓</td>
-                            <td>118<span class="unit" style="font-size: 16px;"> 萬/坪</span></td>
-                            <td>2房2廳/35坪</td>
-                            <td>4,130 萬</td>
-                        </tr>
                     </table>
                 </div>
             </section>
-            
-            
             <section id="surrounding-facilities">
                 <h2>周邊機能</h2>
                 <div class="map">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14458.35637493058!2d121.5692206340851!3d25.048015180411554!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442ab9884cae453%3A0x26e27c4a5e7ec826!2z5Y-w5YyX5biC5rC45ZCJ6Lev!5e0!3m2!1szh-TW!2stw!4v1721912925126!5m2!1szh-TW!2stw" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <iframe id="map" src="default-map.html" width="600" height="450" style="border:0;"></iframe>
                 </div>
             </section>
         </div>
@@ -215,68 +213,234 @@
     <footer>
         <h2>VRoom</h2>
         <p>地址:</p>
-        <P>客服專線:03-1234567</P>
+        <p>客服專線:03-1234567</p>
         <p>客服信箱:cycu112vr@gmail.com</p>
     </footer>
+
     <script>
-        function changeImage(src) {
-            document.getElementById('main-image').src = src;
-        }
-
-        // Function to handle the sidebar visibility and active link
-        function handleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const sections = document.querySelectorAll('section');
-            const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
-            const sidebarHeight = sidebar.offsetHeight;
-
-            window.addEventListener('scroll', function() {
-                const scrollPosition = window.scrollY;
-                const windowHeight = window.innerHeight;
-
-                // Handle sidebar fixed positioning
-                const basicInfoSection = document.querySelector('#latest-news');
-                const basicInfoTop = basicInfoSection.getBoundingClientRect().top + scrollPosition;
-
-                if (scrollPosition >= basicInfoTop) {
-                    sidebar.classList.add('fixed');
-                } else {
-                    sidebar.classList.remove('fixed');
-                }
-
-                // Handle active link highlighting
-                sections.forEach(function(section, index) {
-                    if (section.offsetTop <= scrollPosition && section.offsetTop + section.offsetHeight > scrollPosition) {
-                        sidebarLinks.forEach(function(link) {
-                            link.classList.remove('active');
-                        });
-                        sidebarLinks[index].classList.add('active');
-                    }
-                });
-            });
-        }
-
-        // Initialize the sidebar handling function
-        handleSidebar();
-
+        
+        // 整合至已存在的 DOMContentLoaded 事件處理程序
         document.addEventListener('DOMContentLoaded', function() {
-            const timelineItems = document.querySelectorAll('.horizontal-timeline-item');
-            
-            function handleScroll() {
-                const scrollPosition = window.scrollY + window.innerHeight;
-                
-                timelineItems.forEach((item, index) => {
-                    if (item.getBoundingClientRect().top + window.scrollY < scrollPosition - 100) {
-                        setTimeout(() => {
-                            item.classList.add('visible');
-                        }, index * 300); // 逐個延遲進入動畫
+            // Fetch and update house details
+            fetchHouseDetails();
+            // Fetch and update house images
+            fetchHouseImages();
+            // Fetch and update price info
+            fetchPriceInfo();
+            // Fetch and update community planning details
+            fetchCommunityPlanning();
+            // Fetch and update latest news
+            fetchLatestNews();
+            // Fetch and update surrounding facilities
+            fetchSurroundingFacilities();
+
+            // VR導覽按鈕功能
+            const vrButton = document.getElementById('vr-button');
+
+            if (vrButton) {
+                vrButton.addEventListener('click', () => {
+                    // 取得當前網址的查詢參數
+                    const urlParams = new URLSearchParams(window.location.search);
+
+                    // 取得 houseID 的值
+                    const houseID = urlParams.get('houseID');
+
+                    if (houseID) {
+                        // 導向到 VR.html，並附帶 houseID 作為查詢參數
+                        const vrUrl = `VR.html?houseID=${houseID}`;
+                        window.location.href = vrUrl;
+                    } else {
+                        alert('未找到 houseID，請確認 URL 是否正確！');
                     }
                 });
             }
-            
-            window.addEventListener('scroll', handleScroll);
-            handleScroll(); // 初始化檢查滾動位置
         });
+
+        function fetchHouseDetails() {
+            // 從 URL 查詢參數中取得 houseID
+            const urlParams = new URLSearchParams(window.location.search);
+            const houseID = urlParams.get('houseID');
+
+            if (!houseID) {
+                console.error('未找到 houseID，請確認 URL 是否正確！');
+                return;
+            }
+
+            fetch(`/api/house?houseID=${houseID}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('house-name').innerText = data.Name || "未提供名稱";
+                    document.getElementById('house-address').innerText = `地址：${data.Address || "未提供地址"} | 建坪單價 ${data.PricePerUnit || "未提供"} 萬/坪`;
+                    document.getElementById('price-per-unit').innerText = data.PricePerUnit || "未提供";
+                    document.getElementById('parking-price').innerText = `車位：${data.ParkingPrice || "未提供"}`;
+                    document.getElementById('room-layout').innerText = `格局：${data.RoomLayout || "未提供"}`;
+                    document.getElementById('area').innerText = `坪數：${data.Area || "未提供"}`;
+                    document.getElementById('description_house').innerText = `交屋狀況：${data.Description || "未提供"}`;
+                    document.getElementById('completion-year').innerText = `完工：${data.CompletionYear || "未提供"}`;
+                    document.getElementById('address').innerText = `基地地址：${data.Address || "未提供"}`;
+                    document.getElementById('nav-house-name').innerText = data.Name || "未提供名稱";
+                })
+                .catch(err => console.error('Error fetching house details:', err));
+        }
+
+        function fetchHouseImages() {
+            fetch('/api/house/images')
+                .then(response => response.json())
+                .then(images => {
+                    if (images.length > 0) {
+                        const mainImage = document.getElementById('main-image');
+                        if (mainImage) {
+                            mainImage.src = images[0].Img; // 使用 API 返回的路徑
+                            mainImage.alt = images[0].Img_description || 'Building Image';
+                        }
+
+                        // 更新縮略圖
+                        const thumbnails = [
+                            document.getElementById('thumbnail1'),
+                            document.getElementById('thumbnail2'),
+                            document.getElementById('thumbnail3')
+                        ];
+
+                        thumbnails.forEach((thumbnail, index) => {
+                            if (images[index]) {
+                                thumbnail.src = images[index].Img; // 使用 API 返回的路徑
+                                thumbnail.alt = images[index].Img_description || `縮略圖${index + 1}`;
+                                thumbnail.onclick = () => changeImage(images[index].Img);
+                            }
+                        });
+                    }
+                })
+                .catch(err => console.error('Error fetching images:', err));
+        }
+
+
+
+
+
+        function fetchPriceInfo() {
+        fetch('/api/house/price')
+            .then(response => response.json())
+            .then(data => {
+                // 更新平均價格顯示
+                document.getElementById('avg-price').innerText = data[0]?.avgprice || "未提供";
+                document.getElementById('two-year').innerText = data[0]?.twoyear || "未提供";
+                document.getElementById('three-year').innerText = data[0]?.threeyear || "未提供";
+                document.getElementById('other-year').innerText = data[0]?.otheryear || "未提供";
+
+                // 取得表格並清空
+                const table = document.getElementById('price-table');
+                // 清空表格除標題列之外的所有內容
+                table.querySelectorAll('tr:not(:first-child)').forEach(row => row.remove());
+
+                // 添加新資料
+                data.forEach(price => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${price.TransactionDate || "未提供"}</td>
+                        <td>${price.Floor || "未提供"}</td>
+                        <td>${price.PricePerUnit || "未提供"} 萬/坪</td>
+                        <td>${price.RoomDetails || "未提供"}</td>
+                        <td>${price.TotalPrice || "未提供"} 萬</td>
+                    `;
+                    table.appendChild(row);
+                });
+            });
+        }
+            document.addEventListener('DOMContentLoaded', fetchPriceInfo);
+
+
+
+
+        function fetchCommunityPlanning() {
+            fetch('/api/house/community-planning')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('public-facility').innerText = `${data.PublicFacilityRatio || "未提供"}`;
+                    document.getElementById('building-coverage-ratio').innerText = `${data.BuildingRage || "未提供"}`;
+                    document.getElementById('site-area').innerText = `${data.SiteArea || "未提供"}`;
+                    document.getElementById('parking-ratio').innerText = `車位配比: ${data.ParkingRatio || "未提供"}`;
+                    document.getElementById('parking-type').innerText = `車位規劃: ${data.ParkingType || "未提供"}`;
+                    document.getElementById('building-info').innerText = `棟戶規劃: ${data.BuildingInfo || "未提供"}`;
+                    document.getElementById('floor-planning').innerText = `樓層規劃: ${data.FloorPlanning || "未提供"}`;
+                    document.getElementById('orientation').innerText = `座向規劃: ${data.Orientation || "未提供"}`;
+                    document.getElementById('building-permit').innerText = `建造執照: ${data.BuildingPermit || "未提供"}`;
+                    document.getElementById('usage-permit').innerText = `使用執照: ${data.UsagePermit || "未提供"}`;
+                    document.getElementById('building-material').innerText = `建材說明: ${data.BuildingMaterial || "未提供"}`;
+                    document.getElementById('public-facilities').innerText = `公共設施: ${data.PublicFacilities || "未提供"}`;
+                    document.getElementById('property-management').innerText = `物業公司: ${data.Propertymanagement || "未提供"}`;
+                    document.getElementById('management-fee').innerText = `管理費用: ${data.ManagementFee || "未提供"}`;
+                    document.getElementById('man-committee').innerText = `管委會: ${data.man_committee || "未提供"}`;
+                    document.getElementById('land-use-zoning').innerText = `土地分區: ${data.LandUseZoning || "未提供"}`;
+                    document.getElementById('constructure').innerText = `結構工程: ${data.constructure || "未提供"}`;
+
+                });
+        }
+        function fetchLatestNews() {
+    fetch('/api/house/latest-news')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error || data.length === 0) {
+                console.error('未找到最新動態：', data.message || '未知錯誤');
+                return;
+            }
+            // 更新每條最新動態的內容
+            data.forEach((news, index) => {
+                const dateElement = document.querySelector(`[data-id="date-${index + 1}"]`);
+                const descElement = document.querySelector(`[data-id="description-${index + 1}"]`);
+
+                if (dateElement) {
+                    dateElement.innerText = news.con_date || "未提供日期";
+                }
+
+                if (descElement) {
+                    descElement.innerText = news.content_describe || "未提供描述";
+                }
+            });
+        })
+        .catch(err => console.error('抓取最新動態時發生錯誤：', err));
+}
+
+
+document.addEventListener('DOMContentLoaded', fetchLatestNews);
+
+
+
+        function fetchSurroundingFacilities() {
+            fetch('/api/house/surrounding-facilities')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('map').src = data.mapURL || "default-map.html";
+                });
+        }
+
+        function changeImage(src) {
+    const mainImage = document.getElementById('main-image');
+    if (mainImage) {
+        mainImage.src = src;
+    }
+}
+
+document.getElementById("submit-comment").addEventListener("click", function () {
+    const commentText = document.getElementById("comment-text").value.trim();
+
+    if (commentText !== "") {
+        const commentContainer = document.getElementById("comment-container");
+        const newComment = document.createElement("div");
+        newComment.classList.add("comment");
+        newComment.textContent = commentText;
+
+        // 新評論添加到評論容器
+        commentContainer.appendChild(newComment);
+
+        // 清空輸入框
+        document.getElementById("comment-text").value = "";
+
+        // 自動滾動到底部
+        commentContainer.scrollTop = commentContainer.scrollHeight;
+    } else {
+        alert("請輸入評論內容！");
+    }
+});
     </script>
 </body>
 </html>

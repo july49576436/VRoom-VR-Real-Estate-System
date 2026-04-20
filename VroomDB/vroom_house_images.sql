@@ -28,6 +28,7 @@ CREATE TABLE `house_images` (
   `ImageID` int(11) NOT NULL AUTO_INCREMENT,
   `houseID` int(11) DEFAULT NULL,
   `Img_description` varchar(100) DEFAULT NULL,
+  `Img` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`ImageID`),
   KEY `houseID_idx` (`houseID`),
   CONSTRAINT `fk_house_images` FOREIGN KEY (`houseID`) REFERENCES `house` (`houseID`),
@@ -41,7 +42,7 @@ CREATE TABLE `house_images` (
 
 LOCK TABLES `house_images` WRITE;
 /*!40000 ALTER TABLE `house_images` DISABLE KEYS */;
-INSERT INTO `house_images` VALUES (1,1,NULL);
+INSERT INTO `house_images` VALUES (1,1,NULL,NULL);
 /*!40000 ALTER TABLE `house_images` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -54,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-05 21:17:53
+-- Dump completed on 2024-08-09 21:26:44

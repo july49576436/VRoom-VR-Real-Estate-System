@@ -30,7 +30,10 @@ CREATE TABLE `searchfilters` (
   `district` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `PriceRange` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `houseType` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`filterID`)
+  `houseID` int(11) DEFAULT NULL,
+  PRIMARY KEY (`filterID`),
+  KEY `fk_searchfilters_idx` (`houseID`),
+  CONSTRAINT `fk_searchfilters` FOREIGN KEY (`houseID`) REFERENCES `house` (`houseID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -40,7 +43,7 @@ CREATE TABLE `searchfilters` (
 
 LOCK TABLES `searchfilters` WRITE;
 /*!40000 ALTER TABLE `searchfilters` DISABLE KEYS */;
-INSERT INTO `searchfilters` VALUES (1,'台北市','信義區','100萬~300萬','公寓');
+INSERT INTO `searchfilters` VALUES (1,'台北市','信義區','3000萬 - 4000萬','住宅',1);
 /*!40000 ALTER TABLE `searchfilters` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +56,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-05 21:17:54
+-- Dump completed on 2024-08-09 21:26:45

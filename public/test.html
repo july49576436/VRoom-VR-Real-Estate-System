@@ -1,0 +1,277 @@
+<!DOCTYPE html> 
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D建模與360圖片控制</title>
+    <style>
+        body, html {
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* 防止頁面滾動 */
+            margin: 0;
+            padding: 0;
+        }
+        #modelContainer {
+            width: 100vw;
+            height: 100vh;
+        }
+        #confirmButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="modelContainer"></div>
+<button id="confirmButton" onclick="confirmSave()">確認儲存</button>
+
+<!-- 使用 jsdelivr 引入 THREE.js 和 GLTFLoader -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+    let model, camera, scene, renderer;
+    let interactiveObjects = []; // 儲存所有 360 圖片按鈕的陣列
+    let selectedButton = null; // 當前選中的 360 圖片按鈕
+    let isDragging = false; // 拖拽狀態
+    let modelBox; // 保存模型的邊界框
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const houseID = urlParams.get('houseID') || 1;
+
+    function fetchHouseModel(houseID) {
+        fetch(`/api/test/model?houseID=${houseID}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    const { houseModelFloorsFileName } = data[0];
+                    if (houseModelFloorsFileName) {
+                        const loader = new THREE.GLTFLoader();
+                        loader.load(`/3D_data/${houseModelFloorsFileName}`, function (gltf) {
+                            model = gltf.scene;
+                            scene.add(model);
+                            
+                            modelBox = new THREE.Box3().setFromObject(model); // 保存模型的邊界框
+                            const size = modelBox.getSize(new THREE.Vector3()).length();
+                            const center = modelBox.getCenter(new THREE.Vector3());
+
+                            camera.position.set(center.x, center.y + size, center.z); // 固定相機位置
+                            camera.lookAt(center);
+
+                            data.forEach((entry) => {
+                                const imagePath = entry.houseModelFloors360FileName;
+                                const houseModelFloors360ID = entry.houseModelFloors360ID; // 使用唯一識別 ID
+                                if (imagePath) {
+                                    const position = {
+                                        x: entry.houseModelFloors360InitX,
+                                        y: entry.houseModelFloors360InitY,
+                                        z: entry.houseModelFloors360InitZ
+                                    };
+                                    create360Button(`/360_Photo_test/${imagePath}`, position, houseModelFloors360ID);
+                                }
+                            });
+                        });
+                    }
+                }
+            })
+            .catch(error => console.error('加载数据时发生错误:', error));
+    }
+    function confirmSave() {
+        interactiveObjects.forEach((button) => {
+            const { x, y, z } = button.position;
+            const houseModelFloors360ID = button.userData.houseModelFloors360ID;
+            
+            // 修改 log 輸出變數
+            console.log("送出請求:", { houseModelFloors360ID, x, y, z });
+            
+            fetch('/api/savePosition', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ houseModelFloors360ID, x, y, z })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    console.log(`已儲存 360 圖片 ID: ${houseModelFloors360ID} 的位置`);
+                } else {
+                    console.error(`儲存失敗: ${data.message}`);
+                }
+            })
+            .catch(error => console.error(`儲存過程中發生錯誤: ${error.message}`));
+
+        });
+    }
+
+    function create360Button(imagePath, position, houseModelFloors360ID) {
+        const buttonGeometry = new THREE.SphereGeometry(0.5, 32, 32); // 小球體
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load(imagePath);
+
+        const buttonMaterial = new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: true,
+            opacity: 1
+        });
+
+        const button = new THREE.Mesh(buttonGeometry, buttonMaterial);
+        button.position.set(position.x, position.y, position.z);
+        button.userData = {
+            isMovable: true,
+            houseModelFloors360ID: houseModelFloors360ID,  // 唯一標識
+            imagePath: imagePath
+        };
+        scene.add(button);
+        interactiveObjects.push(button); // 加入互動對象
+
+        return button;
+    }
+
+    function initScene() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('modelContainer').appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 10, 7.5);
+        scene.add(directionalLight);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+    }
+
+    // 滾輪事件，用於根據滑鼠位置放大縮小模型
+    function onWheel(event) {
+        const zoomFactor = 1.1;
+        const minZoom = 10;  // 設置最小縮放距離
+        const maxZoom = 100; // 設置最大縮放距離
+        const direction = new THREE.Vector3(0, -1, 0); // 固定向下的俯視角度，避免轉動
+        const distance = camera.position.y; // 直接使用 y 軸距離作為縮放參考
+
+        // 修改縮放邏輯，限制縮放範圍
+        if (event.deltaY < 0 && distance > minZoom) {
+            // 放大
+            camera.position.addScaledVector(direction, zoomFactor);
+        } else if (event.deltaY > 0 && distance < maxZoom) {
+            // 縮小
+            camera.position.addScaledVector(direction, -zoomFactor);
+        }
+        camera.lookAt(modelBox.getCenter(new THREE.Vector3())); // 確保俯視角度不變
+    }
+    
+
+    // 鍵盤事件，用於移動相機
+    function onKeyDown(event) {
+        const moveDistance = 0.5; // 每次按鍵移動的距離
+        const direction = new THREE.Vector3(); // 用於計算移動方向
+
+        switch (event.key) {
+            case 'ArrowUp': // 前移
+                camera.getWorldDirection(direction);
+                direction.setY(0); // 保持水平移動
+                direction.normalize().multiplyScalar(moveDistance);
+                break;
+            case 'ArrowDown': // 後移
+                camera.getWorldDirection(direction);
+                direction.setY(0);
+                direction.normalize().multiplyScalar(-moveDistance);
+                break;
+            case 'ArrowLeft': // 左移
+                camera.getWorldDirection(direction);
+                direction.cross(new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(-moveDistance);
+                break;
+            case 'ArrowRight': // 右移
+                camera.getWorldDirection(direction);
+                direction.cross(new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(moveDistance);
+                break;
+        }
+
+        const newPosition = camera.position.clone().add(direction);
+        if (modelBox.containsPoint(newPosition)) {
+            camera.position.copy(newPosition);
+        }
+    }
+
+    // 處理滑鼠按下事件
+    function onMouseDown(event) {
+        const mouse = new THREE.Vector2(
+            (event.clientX / window.innerWidth) * 2 - 1,
+            -(event.clientY / window.innerHeight) * 2 + 1
+        );
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, camera);
+
+        const intersects = raycaster.intersectObjects(scene.children);
+        if (intersects.length > 0) {
+            const firstIntersect = intersects[0].object;
+            if (firstIntersect.userData.isMovable) {
+                selectedButton = firstIntersect;
+                isDragging = true;
+            }
+        }
+    }
+
+    // 處理滑鼠移動事件
+    function onMouseMove(event) {
+        if (isDragging && selectedButton) {
+            const mouse = new THREE.Vector2(
+                (event.clientX / window.innerWidth) * 2 - 1,
+                -(event.clientY / window.innerHeight) * 2 + 1
+            );
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children);
+
+            if (intersects.length > 0) {
+                const intersectPoint = intersects[0].point;
+                if (modelBox.containsPoint(intersectPoint)) {
+                    selectedButton.position.set(intersectPoint.x, selectedButton.position.y, intersectPoint.z);
+                }
+            }
+        }
+    }
+
+    // 處理滑鼠釋放事件
+    function onMouseUp() {
+        isDragging = false;
+        selectedButton = null;
+    }
+
+
+    window.onload = function() {
+        initScene();
+        fetchHouseModel(houseID);
+    };
+
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('wheel', onWheel, { passive: true });
+    window.addEventListener('keydown', onKeyDown);
+</script>
+
+</body>
+</html>
