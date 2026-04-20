@@ -1,5 +1,12 @@
 function searchHouses(city, district, priceRange, houseType) {
-    fetch(`/search?city=${city}&district=${district}&priceRange=${priceRange}&houseType=${houseType}`)
+    const params = new URLSearchParams({
+        city: city || '',
+        district: district || '',
+        priceRange: priceRange || '',
+        houseType: houseType || ''
+    });
+
+    fetch(`/search?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -28,21 +35,30 @@ function displayResults(data) {
     resultsContainer.innerHTML = '';
 
     if (!data.length) {
-        resultsContainer.innerHTML = '<div>沒有符合條件的建案。</div>';
+        resultsContainer.innerHTML = '<div class="search-empty">沒有符合條件的建案。</div>';
         return;
     }
 
+    const cardsWrapper = document.createElement('div');
+    cardsWrapper.className = 'survey search-results-grid';
+
     data.forEach(house => {
-        const houseElement = document.createElement('div');
-        houseElement.className = 'house-result';
+        const houseElement = document.createElement('a');
+        houseElement.className = 'property search-property';
+        houseElement.href = `house.html?houseID=${house.id}`;
         houseElement.innerHTML = `
-            <h3>${house.name}</h3>
-            <p>地址：${house.address || ''}</p>
-            <p>總價：${formatTotalPrice(house.totalprice)}</p>
-            <p>格局：${house.roomlayout || ''}　坪數：${house.area || ''}</p>
+            <img src="image/NTU.jpg" alt="${house.name || 'House'}">
+            <div class="property-details">
+                <h3>${house.name || '未命名建案'}</h3>
+                <p>總價：${formatTotalPrice(house.totalprice_wan || house.totalprice)}</p>
+                <p>格局：${house.roomlayout || ''} / 坪數：${house.area || ''}</p>
+                <p>地址：${house.address || ''}</p>
+            </div>
         `;
-        resultsContainer.appendChild(houseElement);
+        cardsWrapper.appendChild(houseElement);
     });
+
+    resultsContainer.appendChild(cardsWrapper);
 }
 
 document.getElementById('search-btn').addEventListener('click', function() {

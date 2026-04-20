@@ -32,6 +32,7 @@ CREATE TABLE `price` (
   `Floor` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `PricePerUnit` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `TotalPrice` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TotalPriceWan` int(11) DEFAULT NULL,
   `RoomDetails` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `twoyear` int(11) DEFAULT NULL,
   `threeyear` int(11) DEFAULT NULL,
@@ -49,7 +50,7 @@ CREATE TABLE `price` (
 
 LOCK TABLES `price` WRITE;
 /*!40000 ALTER TABLE `price` DISABLE KEYS */;
-INSERT INTO `price` VALUES (1,1,'112-05','120萬/坪','7樓','120','4,200','2房2廳/35坪',118,115,119,120),(2,1,'112-02','','3樓','118','4,130','2房2廳/35坪',NULL,NULL,NULL,NULL);
+INSERT INTO `price` VALUES (1,1,'112-05',NULL,'7樓',NULL,'4,200萬',4200,'2房2廳/35坪',118,115,119,120),(2,1,'112-02',NULL,'3樓',NULL,'4,130萬',4130,'2房2廳/35坪',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `price` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

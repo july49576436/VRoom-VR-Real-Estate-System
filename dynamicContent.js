@@ -1,5 +1,38 @@
 const connection = require('./database'); // 引入資料庫連線
 
+function toWanNumber(value) {
+    if (value === undefined || value === null) return null;
+    const raw = String(value).trim();
+    if (!raw) return null;
+
+    const yiMatch = raw.match(/(\d+(?:\.\d+)?)\s*億/);
+    if (yiMatch) {
+        return Math.round(Number(yiMatch[1]) * 10000);
+    }
+
+    const wanMatch = raw.match(/(\d+(?:\.\d+)?)\s*萬/);
+    if (wanMatch) {
+        return Math.round(Number(wanMatch[1]));
+    }
+
+    const numeric = Number(raw.replace(/,/g, '').replace(/[^\d.]/g, ''));
+    if (!Number.isFinite(numeric) || numeric <= 0) return null;
+    return numeric >= 100000 ? Math.round(numeric / 10000) : Math.round(numeric);
+}
+
+function formatWanPrice(wanValue) {
+    if (!Number.isFinite(wanValue) || wanValue <= 0) return null;
+    return `${wanValue.toLocaleString('zh-TW')}萬`;
+}
+
+function normalizeTotalPrice(rawTotalPrice) {
+    const totalPriceWan = toWanNumber(rawTotalPrice);
+    return {
+        totalPriceWan,
+        totalPriceText: formatWanPrice(totalPriceWan)
+    };
+}
+
 
 // Function to fetch all house details
 const fetchHouseDetails = (houseID, callback) => {
@@ -178,7 +211,11 @@ const fetchFeaturedHouses = (flagColumn, callback) => {
             h.houseID AS id,
             h.Name AS name,
             COALESCE(MAX(hi.Img), '/image/NTU.jpg') AS main_image,
-            h.TotalPrice AS total_price,
+            CASE
+                WHEN COALESCE(h.TotalPriceWan, 0) > 0 THEN CONCAT(FORMAT(h.TotalPriceWan, 0), '萬')
+                ELSE h.TotalPrice
+            END AS total_price,
+            h.TotalPriceWan AS total_price_wan,
             COALESCE(MAX(sf.district), '未提供') AS district,
             COALESCE(MAX(sf.houseType), '住宅') AS type,
             h.RoomLayout AS layout,
@@ -207,19 +244,22 @@ const listHouses = (callback) => {
 };
 
 const createHouse = (data, callback) => {
+    const normalizedPrice = normalizeTotalPrice(data.TotalPrice);
+
     const insertHouse = (houseID) => {
         const sql = `
             INSERT INTO house (
-                houseID, Name, Address, PricePerUnit, TotalPrice, RoomLayout, Area,
+                houseID, Name, Address, PricePerUnit, TotalPrice, TotalPriceWan, RoomLayout, Area,
                 CompletionYear, ParkingPrice, VR, Description, recommend, new, price_reduction
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         const params = [
             houseID,
             data.Name,
             data.Address,
-            data.PricePerUnit,
-            data.TotalPrice,
+            data.PricePerUnit || null,
+            normalizedPrice.totalPriceText,
+            normalizedPrice.totalPriceWan,
             data.RoomLayout,
             data.Area,
             data.CompletionYear,
@@ -244,12 +284,15 @@ const createHouse = (data, callback) => {
 };
 
 const updateHouse = (houseID, data, callback) => {
+    const normalizedPrice = normalizeTotalPrice(data.TotalPrice);
+
     const sql = `
         UPDATE house SET
             Name = ?,
             Address = ?,
             PricePerUnit = ?,
             TotalPrice = ?,
+            TotalPriceWan = ?,
             RoomLayout = ?,
             Area = ?,
             CompletionYear = ?,
@@ -264,8 +307,9 @@ const updateHouse = (houseID, data, callback) => {
     const params = [
         data.Name,
         data.Address,
-        data.PricePerUnit,
-        data.TotalPrice,
+        data.PricePerUnit || null,
+        normalizedPrice.totalPriceText,
+        normalizedPrice.totalPriceWan,
         data.RoomLayout,
         data.Area,
         data.CompletionYear,
@@ -317,11 +361,13 @@ const fetchPriceRecordsByHouse = (houseID, callback) => {
 };
 
 const createPriceRecord = (houseID, data, callback) => {
+    const normalizedPrice = normalizeTotalPrice(data.TotalPrice);
+
     const sql = `
         INSERT INTO price (
             houseID, TransactionDate, TransctionPrice, Floor, PricePerUnit,
-            TotalPrice, RoomDetails, twoyear, threeyear, otheryear, avgprice
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            TotalPrice, TotalPriceWan, RoomDetails, twoyear, threeyear, otheryear, avgprice
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
         houseID,
@@ -329,7 +375,8 @@ const createPriceRecord = (houseID, data, callback) => {
         data.TransctionPrice || null,
         data.Floor || null,
         data.PricePerUnit || null,
-        data.TotalPrice || null,
+        normalizedPrice.totalPriceText,
+        normalizedPrice.totalPriceWan,
         data.RoomDetails || null,
         data.twoyear || null,
         data.threeyear || null,
@@ -340,6 +387,8 @@ const createPriceRecord = (houseID, data, callback) => {
 };
 
 const updatePriceRecord = (priceID, data, callback) => {
+    const normalizedPrice = normalizeTotalPrice(data.TotalPrice);
+
     const sql = `
         UPDATE price SET
             TransactionDate = ?,
@@ -347,6 +396,7 @@ const updatePriceRecord = (priceID, data, callback) => {
             Floor = ?,
             PricePerUnit = ?,
             TotalPrice = ?,
+            TotalPriceWan = ?,
             RoomDetails = ?,
             twoyear = ?,
             threeyear = ?,
@@ -359,7 +409,8 @@ const updatePriceRecord = (priceID, data, callback) => {
         data.TransctionPrice || null,
         data.Floor || null,
         data.PricePerUnit || null,
-        data.TotalPrice || null,
+        normalizedPrice.totalPriceText,
+        normalizedPrice.totalPriceWan,
         data.RoomDetails || null,
         data.twoyear || null,
         data.threeyear || null,

@@ -90,51 +90,6 @@ $(document).ready(() => {  // 等待DOM完全載入後執行
             </a>
         `;
     }
-
-    // 獲取推薦房屋
-    $.ajax({
-        url: '/api/recommendations',  // 向伺服器發送GET請求以獲取推薦房屋數據
-        method: 'GET',  // 請求方法是GET
-        success: (data) => {  // 如果請求成功，執行此函數
-            const container = $('#recommendations-container');  // 獲取推薦房屋容器
-            data.forEach(house => {  // 對每個房屋數據執行以下操作
-                container.append(buildHouseCard(house));
-            });
-        },
-        error: (err) => {  // 如果請求失敗，執行此函數
-            console.error('Error fetching recommendations:', err);  // 在控制台顯示錯誤訊息
-        }
-    });
-
-    // 獲取新上架房屋
-    $.ajax({
-        url: '/api/new-arrivals',  // 向伺服器發送GET請求以獲取新上架房屋數據
-        method: 'GET',  // 請求方法是GET
-        success: (data) => {  // 如果請求成功，執行此函數
-            const container = $('#new-arrivals-container');  // 獲取新上架房屋容器
-            data.forEach(house => {  // 對每個房屋數據執行以下操作
-                container.append(buildHouseCard(house));
-            });
-        },
-        error: (err) => {  // 如果請求失敗，執行此函數
-            console.error('Error fetching new arrivals:', err);  // 在控制台顯示錯誤訊息
-        }
-    });
-
-    // 獲取降價中古屋
-    $.ajax({
-        url: '/api/price-drop',  // 向伺服器發送GET請求以獲取降價中古屋數據
-        method: 'GET',  // 請求方法是GET
-        success: (data) => {  // 如果請求成功，執行此函數
-            const container = $('#price-drop-container');  // 獲取降價中古屋容器
-            data.forEach(house => {  // 對每個房屋數據執行以下操作
-                container.append(buildHouseCard(house));
-            });
-        },
-        error: (err) => {  // 如果請求失敗，執行此函數
-            console.error('Error fetching price drop houses:', err);  // 在控制台顯示錯誤訊息
-        }
-    });
 });
 
 const districtsData = {

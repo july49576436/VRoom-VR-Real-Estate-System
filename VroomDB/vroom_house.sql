@@ -30,6 +30,7 @@ CREATE TABLE `house` (
   `Address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `PricePerUnit` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `TotalPrice` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TotalPriceWan` int(11) DEFAULT NULL,
   `RoomLayout` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `Area` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `CompletionYear` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -49,7 +50,7 @@ CREATE TABLE `house` (
 
 LOCK TABLES `house` WRITE;
 /*!40000 ALTER TABLE `house` DISABLE KEYS */;
-INSERT INTO `house` VALUES (1,'市府微風松菸美寓','台北市信義區永吉路','120 萬/坪','3900萬','2房2廳','30~40坪','2022年','300萬',NULL,'隨時交屋',NULL,NULL,NULL);
+INSERT INTO `house` VALUES (1,'市府微風松菸美寓','台北市信義區永吉路',NULL,'3,900萬',3900,'2房2廳','30~40坪','2022年','300萬',NULL,'隨時交屋',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `house` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
